@@ -5,6 +5,6 @@ var controller = require('./search.controller');
 
 var router = express.Router();
 
-router.get('/', controller.index);
+router.get('/nn', controller.nearestNeighbour);
 
 module.exports = router;

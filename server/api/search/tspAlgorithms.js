@@ -6,7 +6,7 @@ var dohop = require('./dohop');
 var async = require('async');
 
 var maxRetries = 5;
-var maxNNIterations = 20;
+var maxNNIterations = 25;
 
 exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, cb) {
   var route = [];

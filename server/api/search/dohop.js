@@ -10,10 +10,11 @@ var BASE_PATH = template.parse('/api/v1/livestore/en/{user-country}/per-airport/
 exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs, options, cb) {
   var departureDateFrom = depDateFrom.format('YYYY-MM-DD');
   var departureDateTo = depDateTo.format('YYYY-MM-DD');
+  var arrivalAirports;
   if (_.isPlainObject(arrivalLegs)) {
-    var arrivalAirports = _.keys(arrivalLegs);
+    arrivalAirports = _.keys(arrivalLegs);
   } else {
-    var arrivalAirports = arrivalLegs;
+    arrivalAirports = arrivalLegs;
   }
   var basePath = BASE_PATH.expand({
     'user-country': options.userCountry,
@@ -33,6 +34,9 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
       }
       // TODO: Check the ratio of body.fares.length and arrivalAirports.length?
       //       If the ratio is too big, retry with wider time criteria.
+      // if (body.fares.length/arrivalAirports.length < 0.2) {
+      //   return cb('Too few flights found', null);
+      // }
       var lowestFare = body.fares[0];
       cb(null, lowestFare);
     } else {

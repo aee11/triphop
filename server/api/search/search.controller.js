@@ -7,7 +7,7 @@ var dohop = require('./dohop');
 var tspAlgorithms = require('./tspAlgorithms');
 
 // Get list of flights
-exports.index = function(req, res) {
+exports.nearestNeighbour = function(req, res) {
   // TODO: Change required params from queryParams to pathParams
   console.log(req.query);
   var unvisitedAirports = {};
@@ -20,7 +20,7 @@ exports.index = function(req, res) {
     if (!_.isArray(req.query.legs) || !_.isArray(req.query.durs)) {
       return res.status(400).end();
     }
-    if (req.query.legs.length != req.query.durs.length) {
+    if (req.query.legs.length !== req.query.durs.length) {
       return res.status(400).end();
     }
     unvisitedAirports = _.zipObject(req.query.legs, req.query.durs);
