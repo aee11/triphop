@@ -5,6 +5,9 @@ angular.module('triphopApp')
     $scope.menu = [{
       'title': 'Home',
       'link': '/'
+    },{
+      'title': 'Search',
+      'link': '/search'
     }];
 
     $scope.isCollapsed = true;

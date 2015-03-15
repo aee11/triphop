@@ -1,0 +1,42 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div layout="column" layout-padding layout-align="center">
+  <form name="searchQuery" ng-submit="search()">
+
+    <div layout="column" layout-align="center">
+      <button type="submit" ng-click="search()" layout-align="center">Search</button>
+			<button ng-click="addStop()">Add stop</button>
+			query = {{query | json}}
+			dagsetning = {{dt}}
+    </div>
+		
+    <div class="container">
+      <label>Start: </label>
+      <input type="text" ng-model="query.start"/>
+    </div>
+		
+		<!-- Add stop fields -->
+		<div ng-repeat="stop in query.stops track by $index">
+			<div class="container">
+				<label>Stop: {{$index+1}} <label>
+				<input type="text" ng-model="query.stops[$index]"/><button type="submit" ng-click="removeStop([$index])" layout-align="center">x</button>
+			</div>
+		</div>
+		<div class="row">
+      <div class="col-md-6">
+          <p class="input-group">
+            <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+          </p>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+
+
+
