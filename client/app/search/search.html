@@ -11,11 +11,11 @@
           <label>Start: </label>
         </div>
         <div class="col-xs-4">
-          <input type="text" class="form-control" placeholder="Start" ng-model="query.start"/>
+          <input type="text" class="form-control" placeholder="Start" ng-model="query.startLoc"/>
         </div>
         <div class="col-xs-6">
             <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="query.startDate" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -52,9 +52,18 @@
       
 </div>
 
+<div class="container">
+  <div class="row">
+    <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+      <ui-gmap-marker ng-repeat='(airport, data) in route.airportsOnRoute' idKey='airport' coords='{latitude: data.lat, longitude: data.lon}'></ui-gmap-marker>
+    </ui-gmap-google-map>
+  </div>
+</div>
+
 
 query = {{query | json}} <br>
-dagsetning = {{dt}}
+
+route = {{ route | json }}
 
 
 

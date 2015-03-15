@@ -10,6 +10,7 @@ var maxNNIterations = 25;
 
 exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, cb) {
   var route = [];
+  var airportsOnRoute = {};
   var homeAirport = depAirport;
   var isSearchingForHomeFare = false;
   var iterations = 0;
@@ -18,10 +19,10 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
     function () { return _.size(unvisitedLegs) > 0 && iterations < maxNNIterations && retries < maxRetries; },
     function (callback) {
       iterations++;
-      dohop.getLowestFare(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, function (err, fare) {
+      dohop.getLowestFare(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, function (err, fareWithAirports) {
         if (err) {
           // No fares found, search criteria widened via date:
-          maxRetries++;
+          retries++;
           if (depDateTo.diff(depDateFrom, 'days') >= 6) {
             depDateTo.add(3, 'days');
           } else {
@@ -31,6 +32,8 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
           return callback();
         }
         retries = 0;
+        _.merge(airportsOnRoute, fareWithAirports.airports);
+        var fare = fareWithAirports.lowestFare;
         console.log(fare);
         route.push(fare);
 
@@ -52,7 +55,7 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
     },
     function (err) {
       if (!err) {
-        cb(null, route);
+        cb(null, {route: route, airportsOnRoute: airportsOnRoute});
       } else {
         cb(err, null);
       }

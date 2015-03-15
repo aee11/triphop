@@ -5,7 +5,7 @@ var request = require('request');
 var template = require('url-template');
 var moment = require('moment');
 var BASE_URL = require('../../config/local.env').DOHOP_API_BASEURL;
-var BASE_PATH = template.parse('/api/v1/livestore/en/{user-country}/per-airport/{departure-airport}/{arrival-airports}/{date-from}/{date-to}?id=H4cK3r&currency={currency}&b_max=1&fare-format=full&airport-format=compact');
+var BASE_PATH = template.parse('/api/v1/livestore/en/{user-country}/per-airport/{departure-airport}/{arrival-airports}/{date-from}/{date-to}?id=H4cK3r&currency={currency}&b_max=1&fare-format=full&airport-format=full');
 
 exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs, options, cb) {
   var departureDateFrom = depDateFrom.format('YYYY-MM-DD');
@@ -38,7 +38,9 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
       //   return cb('Too few flights found', null);
       // }
       var lowestFare = body.fares[0];
-      cb(null, lowestFare);
+      var airports = body.airports;
+      var fareWithAirports = {lowestFare: lowestFare, airports: airports};
+      cb(null, fareWithAirports);
     } else {
       cb('Error', null);
     }
