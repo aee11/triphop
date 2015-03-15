@@ -2,18 +2,38 @@
 
 var _ = require('lodash');
 var request = require('request');
+var moment = require('moment');
 var dohop = require('./dohop');
 var tspAlgorithms = require('./tspAlgorithms');
 
 // Get list of flights
 exports.index = function(req, res) {
+  // TODO: Change required params from queryParams to pathParams
   console.log(req.query);
-  res.json(req.query)
-  // var requestURL = dohop.createRequestURL(req.query);
-  // console.log(requestURL);
-  // request(requestURL, function (error, response, body) {
-  //   if (!error && response.statusCode == 200) {
-  //     res.send(JSON.parse(body)); // Show the HTML for the Google homepage.
-  //   }
-  // });
+  var unvisitedAirports = {};
+  if (_.isString(req.query.legs)) {
+    if (!_.isString(req.query.durs)) {
+      return res.status(400).end();
+    }
+    unvisitedAirports[req.query.legs] = req.query.durs;
+  } else {
+    if (!_.isArray(req.query.legs) || !_.isArray(req.query.durs)) {
+      return res.status(400).end();
+    }
+    if (req.query.legs.length != req.query.durs.length) {
+      return res.status(400).end();
+    }
+    unvisitedAirports = _.zipObject(req.query.legs, req.query.durs);
+  }
+  
+  var startDate = moment(req.query.startDate);
+  var options = _.pick(req.query, ['userCountry', 'currency']);
+  tspAlgorithms.nearestNeighbour(req.query.startLoc, 
+    startDate, startDate.clone(), unvisitedAirports, options, function (err, nnRoute) {
+      if (err) {
+        return res.send(err);
+      } else {
+        return res.json(nnRoute);
+      }
+  });
 };
