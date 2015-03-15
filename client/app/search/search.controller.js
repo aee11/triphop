@@ -1,19 +1,20 @@
 'use strict';
-var scope;
+
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope) {
-		scope = $scope
+  .controller('SearchCtrl', function ($scope, FareRoute) {
     $scope.query = {
       start: "", 
-      stops: [""]
+      stops: [""],
+      durs: [""]
     };
 
     $scope.search = function() {
-				
+		  
     };
 
     $scope.addStop = function() {
       $scope.query.stops.push("");
+      $scope.query.durs.push("");
     }
 		
 		$scope.removeStop = function(index){
