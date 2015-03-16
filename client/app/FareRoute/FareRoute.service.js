@@ -22,6 +22,9 @@ angular.module('triphopApp')
       }
     };
 
+    var tdtspSolver = function(fareData) {
+      
+    };
     // Public API here
     return {
       nnApi: nnApi,
