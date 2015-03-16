@@ -8,8 +8,23 @@ angular.module('triphopApp')
       }
     });
 
+    var queryBuilder = function(query) {
+      var airportCodesPerLocation = _.map(query.stops, function (stop) {
+        return stop.airports.join();
+      });
+      return {
+        startLoc: query.startLoc.airports.join(),
+        startDate: moment(query.startDate).format('YYYY-MM-DD'),
+        legs: airportCodesPerLocation,
+        durs: query.durs,
+        userCountry: 'IS',
+        currency: 'ISK'
+      }
+    };
+
     // Public API here
     return {
-      nnApi: nnApi
+      nnApi: nnApi,
+      queryBuilder: queryBuilder
     };
   });

@@ -1,1 +1,21 @@
 .angular-google-map-container { height: 400px; }
+.float-right {
+  float: right;
+}
+.clearfix:after {
+  content:"";
+  display:table;
+  clear:both;
+}
+.airport-code { 
+  margin-right: 2px; 
+}
+.airport-location {
+  font-size: 1.2em;
+}
+.sublocation {
+  padding-left: 1.3em;
+}
+.autocomplete-divider {
+  margin: 2px 0 !important;
+}

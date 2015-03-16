@@ -11,7 +11,7 @@
           <label>Start: </label>
         </div>
         <div class="col-xs-4">
-          <input type="text" class="form-control" placeholder="Start" ng-model="query.startLoc"/>
+          <input type="text" class="form-control" placeholder="Start" ng-model="query.startLoc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
         </div>
         <div class="col-xs-6">
             <p class="input-group">
@@ -32,7 +32,7 @@
   				  <label>Stop {{$index+1}}: <label>
           </div>
           <div class="col-xs-4">
-  				  <input type="text" class="form-control" placeholder="Stop" ng-model="query.stops[$index]"/>
+  				  <input type="text" class="form-control" placeholder="Stop" ng-model="query.stops[$index]" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" />
           </div>
           <div class="col-xs-1"> 
             <button type="button" class="btn btn-danger" ng-click="removeStop([$index])" layout-align="center">x</button>
@@ -52,18 +52,44 @@
       
 </div>
 
+{{path}}
+
 <div class="container">
   <div class="row">
     <ui-gmap-google-map center='map.center' zoom='map.zoom'>
       <ui-gmap-marker ng-repeat='(airport, data) in route.airportsOnRoute' idKey='airport' coords='{latitude: data.lat, longitude: data.lon}'></ui-gmap-marker>
+
+        <ui-gmap-polyline 
+          path="polylines.path" 
+          stroke="polylines.stroke"
+          visible='true'
+          fit='true'
+          icons='polylines.icons'
+          draggable='false'
+          clickable='false'>
+        </ui-gmap-polyline>
+
     </ui-gmap-google-map>
   </div>
 </div>
 
+<script type="text/ng-template" id="typeaheadLocations.html">
+  <a class='clearfix'>
+      <span class='airport-location' ng-bind='match.model.name'></span> <span ng-if='!match.model.children' class='label label-info airport-code' ng-repeat='airport in match.model.airports' ng-bind='airport'></span>
+      <span class='float-right' ng-bind='match.model.country'></span>
+      <ul class='sublocation'>
+        <li ng-repeat='subLocation in match.model.children'>
+          <i class="glyphicon glyphicon-triangle-right"></i>
+          {{ subLocation.name }} 
+          <span class='label label-info airport-code'>{{ subLocation.airports[0] }}</span>
+        </li>
+      </ul>
+      
+  </a>
+  <li class='divider autocomplete-divider'></li>
+</script>
 
-query = {{query | json}} <br>
-
-route = {{ route | json }}
+query = {{query | json}}
 
 
 
