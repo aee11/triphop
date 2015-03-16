@@ -10,6 +10,7 @@ angular.module('triphopApp')
     };
     $scope.route = {};
     $scope.search = function() {
+      
       var fareQuery = {
         startLoc: $scope.query.startLoc,
         startDate: moment($scope.query.startDate).format('YYYY-MM-DD'),
@@ -18,6 +19,7 @@ angular.module('triphopApp')
         userCountry: 'IS',
         currency: 'ISK'
       };
+      fareQuery = FareRoute.queryBuilder($scope.query);
       console.log(fareQuery);
 		  FareRoute.nnApi.getNNRoute(fareQuery, function (route) {
         $scope.route = route;

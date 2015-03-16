@@ -16,6 +16,7 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
   } else {
     arrivalAirports = arrivalLegs;
   }
+  console.log(arrivalAirports);
   var basePath = BASE_PATH.expand({
     'user-country': options.userCountry,
     'departure-airport': depAirport,
@@ -37,10 +38,17 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
       // if (body.fares.length/arrivalAirports.length < 0.2) {
       //   return cb('Too few flights found', null);
       // }
+      var nextDestinationIndex = _.findIndex(arrivalAirports, function(multipleAirportCodes) {
+        return multipleAirportCodes.indexOf(body.fares[0].b) > -1;
+      });
       var lowestFare = body.fares[0];
       var airports = body.airports;
-      var fareWithAirports = {lowestFare: lowestFare, airports: airports};
-      cb(null, fareWithAirports);
+      var fareInformation = {
+        lowestFare: lowestFare, 
+        airports: airports, 
+        nextDestination: arrivalAirports[nextDestinationIndex]
+      };
+      cb(null, fareInformation);
     } else {
       cb('Error', null);
     }

@@ -19,7 +19,7 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
     function () { return _.size(unvisitedLegs) > 0 && iterations < maxNNIterations && retries < maxRetries; },
     function (callback) {
       iterations++;
-      dohop.getLowestFare(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, function (err, fareWithAirports) {
+      dohop.getLowestFare(depAirport, depDateFrom, depDateTo, unvisitedLegs, options, function (err, fareInfo) {
         if (err) {
           // No fares found, search criteria widened via date:
           retries++;
@@ -32,23 +32,24 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
           return callback();
         }
         retries = 0;
-        _.merge(airportsOnRoute, fareWithAirports.airports);
-        var fare = fareWithAirports.lowestFare;
+        _.merge(airportsOnRoute, fareInfo.airports);
+        var fare = fareInfo.lowestFare;
+        var nextDestination = fareInfo.nextDestination;
         console.log(fare);
         route.push(fare);
 
-        var depDateNext = moment(fare.d1).add(unvisitedLegs[fare.b], 'days');
+        var depDateNext = moment(fare.d1).add(unvisitedLegs[nextDestination], 'days');
         console.log('Next flight on: ' + depDateNext.format('YYYY-MM-DD'));
         depDateFrom = depDateNext.clone();
         depDateTo = depDateNext.clone();
 
-        unvisitedLegs = _.omit(unvisitedLegs, fare.b);
+        unvisitedLegs = _.omit(unvisitedLegs, nextDestination);
         if (_.size(unvisitedLegs) < 1 && !isSearchingForHomeFare) {
           isSearchingForHomeFare = true;
           unvisitedLegs[homeAirport] = 0;
         }
-        depAirport = fare.b;
-        console.log('Next dest: ' + fare.b);
+        depAirport = nextDestination;
+        console.log('Next dest: ' + nextDestination);
         console.log('Currently unvisited: ', unvisitedLegs);
         callback();
       });
@@ -61,5 +62,4 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
       }
     }
   );
-
 };

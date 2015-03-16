@@ -25,7 +25,6 @@ exports.nearestNeighbour = function(req, res) {
     }
     unvisitedAirports = _.zipObject(req.query.legs, req.query.durs);
   }
-  
   var startDate = moment(req.query.startDate);
   var options = _.pick(req.query, ['userCountry', 'currency']);
   tspAlgorithms.nearestNeighbour(req.query.startLoc, 
