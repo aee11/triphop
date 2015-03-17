@@ -1,6 +1,6 @@
 <div ng-show="showParam">
   <div id="bg">
-    <img src="assets/images/bg4.jpg" alt="">
+    <div ng-bind-html="imgStr"></div>
   </div>
   <div class="header">  
     <div class="text-vertical-center">
@@ -23,7 +23,7 @@
             </div>
             <div class="col-xs-2">
               <a href="">
-                <button type="button" class="btn btn-primary" ng-click="searchFirst()" layout-align="center">Search</button>
+                <button type="button" class="btn btn-primary btn-block" ng-click="searchFirst()" layout-align="center">Search</button>
               </a>
             </div>
             <div class="col-xs-1"></div>
