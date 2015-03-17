@@ -38,7 +38,7 @@ angular.module('triphopApp')
       startingDay: 1
     };
     $scope.format = 'dd MMMM yyyy';
-
+    $scope.getLocation = FareRoute.getLocation;
 
     // ****** Random pictures
 

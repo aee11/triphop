@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('triphopApp')
-  .factory('FareRoute', function ($resource) {
+  .factory('FareRoute', function ($resource, $http) {
     var routeApi = $resource('/api/search/:algorithm/', null, {
       getNNRoute: {
         method: 'GET',
@@ -31,12 +31,18 @@ angular.module('triphopApp')
       }
     };
 
-    var tdtspSolver = function(fareData) {
-      
+    var getLocation = function(prefix) {
+      return $http.get('http://api.dohop.com/api/v1/picker/en/' + prefix).then(function(response){
+        console.log(response);
+        return response.data.matches;
+      });
     };
+
     // Public API here
     return {
       routeApi: routeApi,
-      queryBuilder: queryBuilder
+      queryBuilder: queryBuilder,
+      getLocation: getLocation,
+      uiObject: {query: null}
     };
   });

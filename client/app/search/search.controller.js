@@ -90,8 +90,17 @@ function loadScript() {
 window.onload = loadScript;
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, FareRoute, $http) {
+  .controller('SearchCtrl', function ($scope, FareRoute, $http, $location) {
 		scope = $scope;
+    if (angular.isObject(FareRoute.uiObject.query)) {
+      console.log(FareRoute.uiObject);
+      $scope.query = FareRoute.uiObject.query;
+      loadScript(); // Smá ljótt
+    } else {
+      console.log('going to landing page');
+      $location.path('landing');
+      return;
+    }
 		
 		$scope.infowindow = infowindow;
     // $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
@@ -161,11 +170,6 @@ angular.module('triphopApp')
 
     $scope.selected = undefined;
 
-    $scope.getLocation = function(prefix) {
-      return $http.get('http://api.dohop.com/api/v1/picker/en/' + prefix).then(function(response){
-        console.log(response);
-        return response.data.matches;
-      });
-    };
+    $scope.getLocation = FareRoute.getLocation;
 		
   });
