@@ -4,15 +4,15 @@ var map;
 var markers = [];
 var infowindow;
 function initialize() {
-	var mapOptions = {
-		zoom: 8,
-		center: new google.maps.LatLng(-34.397, 150.644),
-		disableDefaultUI: true,
-		minZoom: 1,
-		maxZoom: 10
-	};
-	map = new google.maps.Map(document.getElementById('map-canvas'),
-			mapOptions);
+	// var mapOptions = {
+	// 	zoom: 8,
+	// 	center: new google.maps.LatLng(-34.397, 150.644),
+	// 	disableDefaultUI: true,
+	// 	minZoom: 1,
+	// 	maxZoom: 10
+	// };
+	// map = new google.maps.Map(document.getElementById('map-canvas'),
+	// 		mapOptions);
 			
 
 	addMarker(new google.maps.LatLng(-34.397, 150.644));
@@ -77,29 +77,39 @@ function addMarker(location, info) {
 	markers.push(marker);
 }
 
-function loadScript() {
-	var script = document.createElement('script');
-	script.type = 'text/javascript';
-	script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
-			'&signed_in=false&callback=initialize';
-	document.body.appendChild(script);
-}
+// function loadScript() {
+// 	var script = document.createElement('script');
+// 	script.type = 'text/javascript';
+// 	script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
+// 			'&signed_in=false&callback=initialize';
+// 	document.body.appendChild(script);
+// }
 			
 
 
-window.onload = loadScript;
+// window.onload = loadScript;
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, FareRoute, $http, $location) {
+  .controller('SearchCtrl', function ($scope, FareRoute, $http, $location, GoogleMapsInitializer) {
+    GoogleMapsInitializer.mapsInitialized.then(function () {
+      var mapOptions = {
+        zoom: 8,
+        center: new google.maps.LatLng(-34.397, 150.644),
+        disableDefaultUI: true,
+        minZoom: 1,
+        maxZoom: 10
+      };
+      map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    });
 		scope = $scope;
     if (angular.isObject(FareRoute.uiObject.query)) {
-      console.log(FareRoute.uiObject);
+      console.log(FareRoute.uiObject.query);
       $scope.query = FareRoute.uiObject.query;
-      initialize(); // Smá ljótt
+      // initialize(); // Smá ljótt
     } else {
       console.log('going to landing page');
-      $location.path('main');
-      return;
+      // $location.path('main');
+      // return;
     }
 		
 		$scope.infowindow = infowindow;

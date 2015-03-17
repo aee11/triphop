@@ -75,9 +75,6 @@ exports.tdtsp = function (startingAirports, depDateFrom, depDateTo, legs, option
       var singleAirportLegs = getSingleAirportLegs(legs);
       var bestRoute = travelingSalesmanCandidates(fares, depDateFrom, 
         singleStartingAirport, singleAirportLegs, function(err, bestRoute) {
-          // var bestRoute = _.first(sortedCandidateRoutes);
-          // console.log('Best route found: ');
-          // console.log(bestRoute);
           cb(null, bestRoute);
         });
     } else {
@@ -108,10 +105,6 @@ var travelingSalesmanCandidates = function (faredata, currentDate, currentAirpor
     totalPrice: 0,
     locationsVisited: 0
   };
-  // var bestRouteSoFar = {
-  //   totalPrice: 0,
-  //   locationsVisited: 0
-  // };
   console.log('Testing each possible route');
   async.each(possibleRoutes, function (route, callback) {
     // console.log('testing route' + route);
@@ -170,27 +163,10 @@ var travelingSalesmanCandidates = function (faredata, currentDate, currentAirpor
         console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
       }
     }
-      // console.log('Route not found! Is best route so far?');
-      // if (i > (bestRouteSoFar.locationsVisited + 1)) {
-      //   bestRouteSoFar.locationsVisited = i - 1;
-      //   bestRouteSoFar.totalPrice = totalPrice;
-      //   bestRouteSoFar.routeFares = routeFares;
-      //   console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
-      // } else if (i == (bestRouteSoFar.locationsVisited + 1) && totalPrice < bestRouteSoFar.totalPrice) {
-      //   bestRouteSoFar.totalPrice = totalPrice;
-      //   bestRouteSoFar.routeFares = routeFares;
-      //   console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
-      // }
-    // }
     callback();
   }, function (err) {
     if (!err) {
       console.log('Largest and cheapest circle:');
-      // var lowestPrice = 0;
-      // console.log(circleIncompleteCandidateRoutes.length);
-      // var sortedCircleRoutes = _.sortBy(circleIncompleteCandidateRoutes, function (candidateCircleRoute) {
-      //   return candidateCircleRoute.totalPrice;
-      // });
       console.log(bestCircleRoute);
       return cb(null, bestCircleRoute);
     } else {
