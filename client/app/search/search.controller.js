@@ -10,9 +10,9 @@ angular.module('triphopApp')
     };
     $scope.route = {};
     $scope.search = function() {
-      fareQuery = FareRoute.queryBuilder($scope.query);
+      var fareQuery = FareRoute.queryBuilder($scope.query);
       console.log(fareQuery);
-		  FareRoute.nnApi.getNNRoute(fareQuery, function (route) {
+		  FareRoute.routeApi.getNNRoute(fareQuery, function (route) {
         $scope.route = route;
         $scope.updateMapPath();
       }, function (err) {

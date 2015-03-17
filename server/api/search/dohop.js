@@ -60,18 +60,22 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
 exports.getAllFares = function(airports, dates, options, cb) {
   var tspPath = template.parse('/api/v1/livestore/en/' + options.userCountry + '/per-airport/' + airports + '/' + airports + '/{date-from}/{date-to}?id=H4cK3r&b_max=10&fare-format=full&airport-format=full&currency=' + options.currency);
   var requestQueries = _.map(dates, function(date) {
-    return url.resolve(BASE_URL, tspPath.expand({
+    var request = url.resolve(BASE_URL, tspPath.expand({
       'date-from': moment(date).subtract(1,'days').format('YYYY-MM-DD'),
       'date-to': moment(date).add(1,'days').format('YYYY-MM-DD')
     }));
+    return {
+      date: date,
+      query: request
+    };
   });
   console.log(requestQueries);
-  var fares = []
+  var fares = {};
   async.each(requestQueries, function(requestQuery, callback) {
-    request({url: requestQuery, json: true}, function (error, response, body) {
+    request({url: requestQuery.query, json: true}, function (error, response, body) {
       if (!error && response.statusCode == 200) {
-        console.log('Found ' + body.fares.length + 'fares');
-        fares.push(body.fares);
+        console.log('Found ' + body.fares.length + ' fares on ' + requestQuery.date);
+        fares[requestQuery.date] = body.fares;
         callback();
       } else {
         callback(error);
@@ -79,7 +83,7 @@ exports.getAllFares = function(airports, dates, options, cb) {
     });
   }, function (err) {
     if (!err) {
-      console.log('finished ' + requestQueries.length + ' queries.');
+      console.log('Finished ' + requestQueries.length + ' queries.');
       cb(null, fares);
     } else {
       cb(err, null);
@@ -96,7 +100,7 @@ exports.createAllPossibleDates = function(depDateFrom, legs) {
   possibleDates = _.map(powersetOfDurations, function(arr) {
     return depDateFrom.clone().add(_.sum(arr), 'days').format('YYYY-MM-DD');
   });
-  return possibleDates;
+  return _.uniq(possibleDates);
 }
 
 function powerset(ary) {

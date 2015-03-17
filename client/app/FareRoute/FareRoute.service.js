@@ -2,9 +2,18 @@
 
 angular.module('triphopApp')
   .factory('FareRoute', function ($resource) {
-    var nnApi = $resource('/api/search/nn/', null, {
+    var routeApi = $resource('/api/search/:algorithm/', null, {
       getNNRoute: {
-        method: 'GET'
+        method: 'GET',
+        params: {
+          algorithm: 'nn'
+        }
+      },
+      getTSPRoute: {
+        method: 'GET',
+        params: {
+          algorithm: 'tsp'
+        }
       }
     });
 
@@ -27,7 +36,7 @@ angular.module('triphopApp')
     };
     // Public API here
     return {
-      nnApi: nnApi,
+      routeApi: routeApi,
       queryBuilder: queryBuilder
     };
   });

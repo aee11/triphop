@@ -4,7 +4,7 @@ var _ = require('lodash');
 var moment = require('moment');
 var dohop = require('./dohop');
 var async = require('async');
-
+var combinatorics = require('js-combinatorics').Combinatorics;
 var maxRetries = 5;
 var maxNNIterations = 25;
 
@@ -66,14 +66,20 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
 
 exports.tdtsp = function (startingAirports, depDateFrom, depDateTo, legs, options, cb) {
   var possibleDates = dohop.createAllPossibleDates(depDateFrom, _.values(legs));
-  console.log(_.keys(legs));
   var possibleLocations = getMostPopularAirportPerDestination(startingAirports, _.keys(legs));
   console.log('Possible dates: ' + possibleDates);
   console.log('Possible locations: ' + possibleLocations);
   dohop.getAllFares(possibleLocations, possibleDates, options, function (err, fares) {
     if (!err) {
-      console.log('FARES');
-      cb(null, fares);
+      var singleStartingAirport = startingAirports.substring(0,3);
+      var singleAirportLegs = getSingleAirportLegs(legs);
+      var bestRoute = travelingSalesmanCandidates(fares, depDateFrom, 
+        singleStartingAirport, singleAirportLegs, function(err, sortedCandidateRoutes) {
+          var bestRoute = _.first(sortedCandidateRoutes);
+          console.log('Best route found: ');
+          console.log(bestRoute);
+          cb(null, bestRoute);
+        });
     } else {
       cb(err, null);
     }
@@ -87,3 +93,53 @@ var getMostPopularAirportPerDestination = function(airports, arrayOfAirports) {
   popularAirports.push(airports.substring(0,3));
   return popularAirports;
 }
+
+var getSingleAirportLegs = function(legs) {
+  var singleAirportLegs = {};
+  _.forEach(legs, function (dur, leg) {
+    singleAirportLegs[leg.substring(0,3)] = dur; 
+  });
+  return singleAirportLegs;
+}
+
+var travelingSalesmanCandidates = function (faredata, currentDate, currentAirport, unvisitedLegs, cb) {
+  var possibleRoutes = combinatorics.permutation(_.keys(unvisitedLegs)).toArray();
+  var candidateRoutes = [];
+  console.log('Testing each possible route');
+  async.each(possibleRoutes, function (route, callback) {
+    var routeFares = [];
+    var startDate = currentDate.clone();
+    route.unshift(currentAirport);
+    route.push(currentAirport);
+    var totalPrice = 0;
+    for (var i = 1; i < route.length; i++) {
+      var faresOnDate = faredata[startDate.format('YYYY-MM-DD')];
+      // console.log(faresOnDate);
+      var cheapestFlightToNextLoc = _.find(faresOnDate, function(fare) {
+        return fare.a == route[i-1] && fare.b === route[i];
+      });
+      if (typeof cheapestFlightToNextLoc !== 'undefined') {
+        routeFares.push(cheapestFlightToNextLoc);
+        totalPrice += cheapestFlightToNextLoc.conv_fare;
+        startDate.add(unvisitedLegs[route[i]], 'days');
+      } else {
+        break;
+      }
+    }
+    if (i == route.length) {
+      routeFares.totalPrice = totalPrice;
+      candidateRoutes.push(routeFares);
+    }
+    callback();
+  }, function (err) {
+    if (!err) {
+      var lowestPrice = 0;
+      var sortedCandidateRoutes = _.sortBy(candidateRoutes, function (candidateRoute) {
+        return candidateRoute.totalPrice;
+      });
+      return cb(null, sortedCandidateRoutes);
+    } else {
+      return cb(err, candidateRoutes);
+    }
+  });
+};
