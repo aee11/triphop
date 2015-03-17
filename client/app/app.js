@@ -5,16 +5,11 @@ angular.module('triphopApp', [
   'ngResource',
   'ngSanitize',
   'ui.router',
-  'ui.bootstrap',
-  'uiGmapgoogle-maps'
+  'ui.bootstrap'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, uiGmapGoogleMapApiProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
     $urlRouterProvider
       .otherwise('/');
 
     $locationProvider.html5Mode(true);
-    uiGmapGoogleMapApiProvider.configure({
-      v: '3.17',
-      libraries: 'drawing'
-    });
   });
