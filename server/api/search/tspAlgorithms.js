@@ -155,10 +155,21 @@ var travelingSalesmanCandidates = function (faredata, currentDate, currentAirpor
         break;
       }
     }
-    // if (i == route.length) {
-    //   console.log('Route found!');
-    //   if ()
-    // }
+    if (i == route.length) {
+      console.log('full route found, price ' + totalPrice);
+      if (i > (bestCircleRoute.locationsVisited + 1)) {
+        // Replace the bestCircleRoute if it is not full
+        bestCircleRoute.locationsVisited = i - 1;
+        bestCircleRoute.totalPrice = totalPrice;
+        bestCircleRoute.routeFares = routeFares;
+        console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
+      } else if (totalPrice < bestCircleRoute.totalPrice) {
+        // This full route has a better price than another full route
+        bestCircleRoute.totalPrice = totalPrice;
+        bestCircleRoute.routeFares = routeFares;
+        console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
+      }
+    }
       // console.log('Route not found! Is best route so far?');
       // if (i > (bestRouteSoFar.locationsVisited + 1)) {
       //   bestRouteSoFar.locationsVisited = i - 1;
