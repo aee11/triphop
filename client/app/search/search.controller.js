@@ -1,22 +1,7 @@
 'use strict';
 var scope;
-var map;
-var markers = [];
-var infowindow;
+
 function initialize() {
-	// var mapOptions = {
-	// 	zoom: 8,
-	// 	center: new google.maps.LatLng(-34.397, 150.644),
-	// 	disableDefaultUI: true,
-	// 	minZoom: 1,
-	// 	maxZoom: 10
-	// };
-	// map = new google.maps.Map(document.getElementById('map-canvas'),
-	// 		mapOptions);
-			
-
-	addMarker(new google.maps.LatLng(-34.397, 150.644));
-
 	var contentString = '<div id="content">'+
       '<div id="siteNotice">'+
       '</div>'+
@@ -29,68 +14,52 @@ function initialize() {
 	infowindow = new google.maps.InfoWindow({
 			content: contentString
 	});
-	
-	////////// 
-	/*
-	 var strictBounds = new google.maps.LatLngBounds(
-	 new google.maps.LatLng(-150, -90),
-	 new google.maps.LatLng(150, 90));
 
-	 // Listen for the dragend event
-	 google.maps.event.addListener(map, 'dragend', function () {
-			 if (strictBounds.contains(map.getCenter())) return;
-
-			 // We're out of bounds - Move the map back within the bounds
-
-			 var c = map.getCenter(),
-					 x = c.lng(),
-					 y = c.lat(),
-					 maxX = strictBounds.getNorthEast().lng(),
-					 maxY = strictBounds.getNorthEast().lat(),
-					 minX = strictBounds.getSouthWest().lng(),
-					 minY = strictBounds.getSouthWest().lat();
-
-			 if (x < minX) x = minX;
-			 if (x > maxX) x = maxX;
-			 if (y < minY) y = minY;
-			 if (y > maxY) y = maxY;
-
-			 map.setCenter(new google.maps.LatLng(y, x));
-	 });
-
-
-	*/ 
-	/////// 
-	
-  // infowindow.open(map,markers[0]);
-}
-function addMarkerLL(lat, lon){
-	addMarker(new google.maps.LatLng(lat, lon))
+  //infowindow.open(map,markers[0]);
 }
 
-function addMarker(location, info) {
-	var marker = new google.maps.Marker({
-		position: location,
-		map: map,
-		animation: google.maps.Animation.DROP
-	});
-	markers.push(marker);
-}
 
-// function loadScript() {
-// 	var script = document.createElement('script');
-// 	script.type = 'text/javascript';
-// 	script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
-// 			'&signed_in=false&callback=initialize';
-// 	document.body.appendChild(script);
-// }
-			
-
-
-// window.onload = loadScript;
 
 angular.module('triphopApp')
   .controller('SearchCtrl', function ($scope, FareRoute, $http, $location, GoogleMapsInitializer) {
+
+		// remove plz
+		scope = $scope;
+		
+		$scope.markers = [];
+		$scope.infowindow = undefined;
+		
+		//**** Get airport data json file
+		$scope.airportData;
+		// Simple GET request example :
+		$http.get('/assets/airports_short.json').
+			success(function(data, status, headers, config) {
+				// this callback will be called asynchronously
+				// when the response is available
+				$scope.airportData = data;
+			}).
+			error(function(data, status, headers, config) {
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+				console.log('error')
+			});
+			
+			
+		$scope.getAirportLocation = function(airportCode){
+			for(var i=0; i<$scope.airportData.length; i++){
+				var result;
+				if($scope.airportData[i].airportCode == airportCode){
+					var lat = $scope.airportData[i].lat;
+					var lon = $scope.airportData[i]['long'];
+					
+					result = {latitude: lat, longitude: lon}
+					return result;
+				}
+			}
+		}
+		
+		
+		// * initialize map:
     GoogleMapsInitializer.mapsInitialized.then(function () {
       var mapOptions = {
         zoom: 8,
@@ -99,9 +68,32 @@ angular.module('triphopApp')
         minZoom: 1,
         maxZoom: 10
       };
-      map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+      $scope.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			$scope.google = google;
+			$scope.initGoogleMap();
     });
-		scope = $scope;
+		
+		$scope.initGoogleMap = function(){
+			$scope.addMarkerLL = function(lat, lon){
+				$scope.addMarker(new google.maps.LatLng(lat, lon))
+			}
+			$scope.addMarker = function(location, info) {
+				var marker = new google.maps.Marker({
+					position: location,
+					map: $scope.map,
+					animation: google.maps.Animation.DROP
+				});
+				$scope.markers.push(marker);
+			}
+			$scope.addMarker(new google.maps.LatLng(63.985, -22.605556));
+		}
+		
+		// latitude: "63.985", longitude: "-22.605.556"
+		
+
+		
+		
+		
     if (angular.isObject(FareRoute.uiObject.query)) {
       console.log(FareRoute.uiObject.query);
       $scope.query = FareRoute.uiObject.query;
@@ -112,8 +104,6 @@ angular.module('triphopApp')
       // return;
     }
 		
-		$scope.infowindow = infowindow;
-    // $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
     $scope.query = {
       startLoc: "",
       stops: [""],
@@ -136,20 +126,12 @@ angular.module('triphopApp')
 
     $scope.addStop = function() {
 			console.log($scope.query.dur + " " + $scope.query.loc);
-			addMarkerLL($scope.query.dur, $scope.query.loc);
+			$scope.addMarkerLL($scope.query.dur, $scope.query.loc);
       // $scope.query.stops.push("");
       // $scope.query.durs.push("");
     }
 		
-		$scope.removeStop = function(index){
-			 if(index == 0){
-				 return
-			 } else {
-			    $scope.query.stops.splice(index, 1);
-          $scope.query.durs.splice(index, 1);
-					console.log("remove element: " + index);
-			 }
-		}
+		
 		
 		$scope.today = function() {
       $scope.query.startDate = new Date();
