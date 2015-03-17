@@ -74,10 +74,10 @@ exports.tdtsp = function (startingAirports, depDateFrom, depDateTo, legs, option
       var singleStartingAirport = startingAirports.substring(0,3);
       var singleAirportLegs = getSingleAirportLegs(legs);
       var bestRoute = travelingSalesmanCandidates(fares, depDateFrom, 
-        singleStartingAirport, singleAirportLegs, function(err, sortedCandidateRoutes) {
-          var bestRoute = _.first(sortedCandidateRoutes);
-          console.log('Best route found: ');
-          console.log(bestRoute);
+        singleStartingAirport, singleAirportLegs, function(err, bestRoute) {
+          // var bestRoute = _.first(sortedCandidateRoutes);
+          // console.log('Best route found: ');
+          // console.log(bestRoute);
           cb(null, bestRoute);
         });
     } else {
@@ -104,9 +104,17 @@ var getSingleAirportLegs = function(legs) {
 
 var travelingSalesmanCandidates = function (faredata, currentDate, currentAirport, unvisitedLegs, cb) {
   var possibleRoutes = combinatorics.permutation(_.keys(unvisitedLegs)).toArray();
-  var candidateRoutes = [];
+  var bestCircleRoute = {
+    totalPrice: 0,
+    locationsVisited: 0
+  };
+  // var bestRouteSoFar = {
+  //   totalPrice: 0,
+  //   locationsVisited: 0
+  // };
   console.log('Testing each possible route');
   async.each(possibleRoutes, function (route, callback) {
+    // console.log('testing route' + route);
     var routeFares = [];
     var startDate = currentDate.clone();
     route.unshift(currentAirport);
@@ -114,7 +122,6 @@ var travelingSalesmanCandidates = function (faredata, currentDate, currentAirpor
     var totalPrice = 0;
     for (var i = 1; i < route.length; i++) {
       var faresOnDate = faredata[startDate.format('YYYY-MM-DD')];
-      // console.log(faresOnDate);
       var cheapestFlightToNextLoc = _.find(faresOnDate, function(fare) {
         return fare.a == route[i-1] && fare.b === route[i];
       });
@@ -122,24 +129,61 @@ var travelingSalesmanCandidates = function (faredata, currentDate, currentAirpor
         routeFares.push(cheapestFlightToNextLoc);
         totalPrice += cheapestFlightToNextLoc.conv_fare;
         startDate.add(unvisitedLegs[route[i]], 'days');
+      } else if (i > 1) {
+        // Okay we can't go further, but can we get home?
+        var flightHome = _.find(faresOnDate, function(fare) {
+          return fare.a == route[i-1] && fare.b == currentAirport; 
+        });
+        if (typeof flightHome !== 'undefined') {
+          // Yes! Found a flight home
+          routeFares.push(flightHome);
+          totalPrice += flightHome.conv_fare;
+          if (i > (bestCircleRoute.locationsVisited + 1)) {
+            bestCircleRoute.locationsVisited = i - 1;
+            bestCircleRoute.totalPrice = totalPrice;
+            bestCircleRoute.routeFares = routeFares;
+            console.log('new best circle route: ' + (i-1) + 'legs for ' + totalPrice);
+          } else if (i == (bestCircleRoute.locationsVisited + 1) && totalPrice < bestCircleRoute.totalPrice) {
+            bestCircleRoute.totalPrice = totalPrice;
+            bestCircleRoute.routeFares = routeFares;
+            console.log('new best circle route: ' + (i-1) + 'legs for ' + totalPrice);
+          }
+        }
+        // console.log('Couldnt find flight from ' + route[i-1] + ' to ' + route[i] + '. i = ' + i);
+        break;
       } else {
         break;
       }
     }
-    if (i == route.length) {
-      routeFares.totalPrice = totalPrice;
-      candidateRoutes.push(routeFares);
-    }
+    // if (i == route.length) {
+    //   console.log('Route found!');
+    //   if ()
+    // }
+      // console.log('Route not found! Is best route so far?');
+      // if (i > (bestRouteSoFar.locationsVisited + 1)) {
+      //   bestRouteSoFar.locationsVisited = i - 1;
+      //   bestRouteSoFar.totalPrice = totalPrice;
+      //   bestRouteSoFar.routeFares = routeFares;
+      //   console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
+      // } else if (i == (bestRouteSoFar.locationsVisited + 1) && totalPrice < bestRouteSoFar.totalPrice) {
+      //   bestRouteSoFar.totalPrice = totalPrice;
+      //   bestRouteSoFar.routeFares = routeFares;
+      //   console.log('new best route: ' + (i-1) + 'legs for ' + totalPrice);
+      // }
+    // }
     callback();
   }, function (err) {
     if (!err) {
-      var lowestPrice = 0;
-      var sortedCandidateRoutes = _.sortBy(candidateRoutes, function (candidateRoute) {
-        return candidateRoute.totalPrice;
-      });
-      return cb(null, sortedCandidateRoutes);
+      console.log('Largest and cheapest circle:');
+      // var lowestPrice = 0;
+      // console.log(circleIncompleteCandidateRoutes.length);
+      // var sortedCircleRoutes = _.sortBy(circleIncompleteCandidateRoutes, function (candidateCircleRoute) {
+      //   return candidateCircleRoute.totalPrice;
+      // });
+      console.log(bestCircleRoute);
+      return cb(null, bestCircleRoute);
     } else {
-      return cb(err, candidateRoutes);
+      return cb(err, bestCircleRoute);
     }
   });
 };

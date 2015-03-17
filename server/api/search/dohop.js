@@ -58,7 +58,7 @@ exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs
 
 // var TSP_PATH = template.parse('/api/v1/livestore/en/{user-country}/per-airport/{departure-airport}/{arrival-airports}/{date-from}/{date-to}?id=H4cK3r&currency={currency}&b_max=1&fare-format=full&airport-format=full');
 exports.getAllFares = function(airports, dates, options, cb) {
-  var tspPath = template.parse('/api/v1/livestore/en/' + options.userCountry + '/per-airport/' + airports + '/' + airports + '/{date-from}/{date-to}?id=H4cK3r&b_max=10&fare-format=full&airport-format=full&currency=' + options.currency);
+  var tspPath = template.parse('/api/v1/livestore/en/' + options.userCountry + '/per-airport/' + airports + '/' + airports + '/{date-from}/{date-to}?id=H4cK3r&b_max=30&fare-format=full&airport-format=full&currency=' + options.currency);
   var requestQueries = _.map(dates, function(date) {
     var request = url.resolve(BASE_URL, tspPath.expand({
       'date-from': moment(date).subtract(1,'days').format('YYYY-MM-DD'),
@@ -71,13 +71,14 @@ exports.getAllFares = function(airports, dates, options, cb) {
   });
   console.log(requestQueries);
   var fares = {};
-  async.each(requestQueries, function(requestQuery, callback) {
+  async.eachLimit(requestQueries, 8, function(requestQuery, callback) {
     request({url: requestQuery.query, json: true}, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         console.log('Found ' + body.fares.length + ' fares on ' + requestQuery.date);
         fares[requestQuery.date] = body.fares;
         callback();
       } else {
+        console.log('request error: ' + requestQuery.query)
         callback(error);
       }
     });
