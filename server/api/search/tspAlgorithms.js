@@ -63,3 +63,27 @@ exports.nearestNeighbour = function(depAirport, depDateFrom, depDateTo, unvisite
     }
   );
 };
+
+exports.tdtsp = function (startingAirports, depDateFrom, depDateTo, legs, options, cb) {
+  var possibleDates = dohop.createAllPossibleDates(depDateFrom, _.values(legs));
+  console.log(_.keys(legs));
+  var possibleLocations = getMostPopularAirportPerDestination(startingAirports, _.keys(legs));
+  console.log('Possible dates: ' + possibleDates);
+  console.log('Possible locations: ' + possibleLocations);
+  dohop.getAllFares(possibleLocations, possibleDates, options, function (err, fares) {
+    if (!err) {
+      console.log('FARES');
+      cb(null, fares);
+    } else {
+      cb(err, null);
+    }
+  });
+};
+
+var getMostPopularAirportPerDestination = function(airports, arrayOfAirports) {
+  var popularAirports = _.map(arrayOfAirports, function (airportCodes) {
+    return airportCodes.substring(0,3);
+  });
+  popularAirports.push(airports.substring(0,3));
+  return popularAirports;
+}
