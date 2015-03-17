@@ -95,10 +95,10 @@ angular.module('triphopApp')
     if (angular.isObject(FareRoute.uiObject.query)) {
       console.log(FareRoute.uiObject);
       $scope.query = FareRoute.uiObject.query;
-      loadScript(); // Smá ljótt
+      initialize(); // Smá ljótt
     } else {
       console.log('going to landing page');
-      $location.path('landing');
+      $location.path('main');
       return;
     }
 		
