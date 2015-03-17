@@ -1,18 +1,113 @@
 'use strict';
+var scope;
+var map;
+var markers = [];
+var infowindow;
+function initialize() {
+	var mapOptions = {
+		zoom: 8,
+		center: new google.maps.LatLng(-34.397, 150.644),
+		disableDefaultUI: true,
+		minZoom: 1,
+		maxZoom: 10
+	};
+	map = new google.maps.Map(document.getElementById('map-canvas'),
+			mapOptions);
+			
+
+	addMarker(new google.maps.LatLng(-34.397, 150.644));
+
+	var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h2 id="firstHeading" class="firstHeading">Location</h2>'+
+      '<div id="bodyContent">'+
+			'<button onClick="console.log(' + "'hello'" + ')" >Click me!</button>'+
+      '</div>'+
+      '</div>';
+
+	infowindow = new google.maps.InfoWindow({
+			content: contentString
+	});
+	
+	////////// 
+	/*
+	 var strictBounds = new google.maps.LatLngBounds(
+	 new google.maps.LatLng(-150, -90),
+	 new google.maps.LatLng(150, 90));
+
+	 // Listen for the dragend event
+	 google.maps.event.addListener(map, 'dragend', function () {
+			 if (strictBounds.contains(map.getCenter())) return;
+
+			 // We're out of bounds - Move the map back within the bounds
+
+			 var c = map.getCenter(),
+					 x = c.lng(),
+					 y = c.lat(),
+					 maxX = strictBounds.getNorthEast().lng(),
+					 maxY = strictBounds.getNorthEast().lat(),
+					 minX = strictBounds.getSouthWest().lng(),
+					 minY = strictBounds.getSouthWest().lat();
+
+			 if (x < minX) x = minX;
+			 if (x > maxX) x = maxX;
+			 if (y < minY) y = minY;
+			 if (y > maxY) y = maxY;
+
+			 map.setCenter(new google.maps.LatLng(y, x));
+	 });
+
+
+	*/ 
+	/////// 
+	
+  // infowindow.open(map,markers[0]);
+}
+function addMarkerLL(lat, lon){
+	addMarker(new google.maps.LatLng(lat, lon))
+}
+
+function addMarker(location, info) {
+	var marker = new google.maps.Marker({
+		position: location,
+		map: map,
+		animation: google.maps.Animation.DROP
+	});
+	markers.push(marker);
+}
+
+function loadScript() {
+	var script = document.createElement('script');
+	script.type = 'text/javascript';
+	script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
+			'&signed_in=false&callback=initialize';
+	document.body.appendChild(script);
+}
+			
+
+
+window.onload = loadScript;
 
 angular.module('triphopApp')
   .controller('SearchCtrl', function ($scope, FareRoute, $http) {
-    $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
+		scope = $scope;
+		
+		$scope.infowindow = infowindow;
+    // $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };
     $scope.query = {
       startLoc: "",
       stops: [""],
-      durs: [""]
+      durs: [""],
+			dur: "",
+			loc: ""
     };
+		
     $scope.route = {};
     $scope.search = function() {
-      var fareQuery = FareRoute.queryBuilder($scope.query);
+      fareQuery = FareRoute.queryBuilder($scope.query);
       console.log(fareQuery);
-		  FareRoute.routeApi.getNNRoute(fareQuery, function (route) {
+		  FareRoute.nnApi.getNNRoute(fareQuery, function (route) {
         $scope.route = route;
         $scope.updateMapPath();
       }, function (err) {
@@ -21,8 +116,10 @@ angular.module('triphopApp')
     };
 
     $scope.addStop = function() {
-      $scope.query.stops.push("");
-      $scope.query.durs.push("");
+			console.log($scope.query.dur + " " + $scope.query.loc);
+			addMarkerLL($scope.query.dur, $scope.query.loc);
+      // $scope.query.stops.push("");
+      // $scope.query.durs.push("");
     }
 		
 		$scope.removeStop = function(index){
@@ -70,53 +167,5 @@ angular.module('triphopApp')
         return response.data.matches;
       });
     };
-
-    // Updates the lines on the map
-    $scope.updateMapPath = function(){
-      var points = []
-      for (var o in $scope.route.airportsOnRoute) {
-        var obj = $scope.route.airportsOnRoute[o];
-        if(obj.hasOwnProperty('lon')){
-          var point = {
-            latitude: obj['lat'],
-            longitude: obj['lon']
-          }
-        }
-      }
-      
-      var route = $scope.route.route;
-      for(var i=0; i<route.length; i++){
-        var name = route[i].a;
-        var lat = $scope.route.airportsOnRoute[name].lat;
-        var lon = $scope.route.airportsOnRoute[name].lon;
-        var point = {
-          latitude: $scope.route.airportsOnRoute[name].lat,
-          longitude: $scope.route.airportsOnRoute[name].lon
-        }
-        points.push(point);
-      }
-      $scope.polylines.path = points;
-      $scope.polylines.path.push(points[0]);
-    };
-    
-    // Lines for map
-    var lineSymbol = {
-        path: 3,
-        strokeColor: "#ff0000",
-        strokeOpacity: 1
-    };
-    var arrow = {
-        icon: lineSymbol,
-        offset: '25px',
-        repeat: '50px',
-    };
-    
-    $scope.polylines =  {
-      path: [],
-      stroke: {
-        color: '#ff0000',
-        weight: 2
-      },
-      icons: [arrow]
-    };
+		
   });

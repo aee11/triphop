@@ -1,77 +1,31 @@
-<div ng-include="'components/navbar/navbar.html'"></div>
 
-<div layout="column" layout-padding layout-align="center">
-  <form name="searchQuery" ng-submit="search()">
-
-    
-		
     <div class="container">
       <div class="row">
-        <div class="col-xs-2">
-          <label>Start: </label>
-        </div>
-        <div class="col-xs-4">
-          <input type="text" class="form-control" placeholder="Start" ng-model="query.startLoc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
-        </div>
-        <div class="col-xs-6">
-            <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="query.startDate" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
-        </div>
-      </div>
-    </div>
-		
-		<!-- Add stop fields -->
-		<div ng-repeat="stop in query.stops track by $index">
-			<div class="container">
-        <div class="row">
-          <div class="col-xs-2">
-  				  <label>Stop {{$index+1}}: <label>
-          </div>
-          <div class="col-xs-4">
-  				  <input type="text" class="form-control" placeholder="Stop" ng-model="query.stops[$index]" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" />
-          </div>
-          <div class="col-xs-1"> 
-            <button type="button" class="btn btn-danger" ng-click="removeStop([$index])" layout-align="center">x</button>
-          </div>
-          <div class="col-xs-2">
-            <input type="text" class="form-control" placeholder="Duration" ng-model="query.durs[$index]"/>
-          </div>
-  			</div>
+				<div class="col-xs-2">
+				</div>
+				<div class="col-xs-4">
+					<input type="text" class="form-control" placeholder="Destination" ng-model="query.loc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
+				</div>
+				<div class="col-xs-2">
+					<input type="text" class="form-control" placeholder="Duration" ng-model="query.dur"/>
+				</div>
+				<div class="col-xs-2">
+					<button type="button" class="btn btn-default" ng-click="addStop()">Add stop</button>
+				</div>
+				<div class="col-xs-2">
+				</div>
+				<div>
+				{{path}}
+				</div>
       </div>
 		</div>
-    <button type="button" class="btn btn-default" ng-click="addStop()">Add stop</button>
-  </form>
+
+
+
+<div id='google-map-wrapper'>
+	<div id='map-canvas'></div>
 </div>
 
-<div layout="column" layout-align="center">
-<button type="button" class="btn btn-default" ng-click="search()" layout-align="center">Search</button>
-      
-</div>
-
-{{path}}
-
-<div class="container">
-  <div class="row">
-    <ui-gmap-google-map center='map.center' zoom='map.zoom'>
-      <ui-gmap-marker ng-repeat='(airport, data) in route.airportsOnRoute' idKey='airport' coords='{latitude: data.lat, longitude: data.lon}'></ui-gmap-marker>
-
-        <ui-gmap-polyline 
-          path="polylines.path" 
-          stroke="polylines.stroke"
-          visible='true'
-          fit='true'
-          icons='polylines.icons'
-          draggable='false'
-          clickable='false'>
-        </ui-gmap-polyline>
-
-    </ui-gmap-google-map>
-  </div>
-</div>
 
 <script type="text/ng-template" id="typeaheadLocations.html">
   <a class='clearfix'>

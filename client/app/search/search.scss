@@ -19,3 +19,40 @@
 .autocomplete-divider {
   margin: 2px 0 !important;
 }
+
+/*
+.input-container{
+	position: absolute;
+	padding: 0 25%;
+	width: 100%;
+	background-color: green;
+	z-index: 9;
+}*/
+ 
+.container {
+	position: absolute;
+	top: 5%;
+	left: 25%;
+	width:50%;
+	padding: auto;
+	z-index: 10;
+	/*background-color: red;*/
+}
+
+button{
+	display: inline;
+}
+
+#map-canvas {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+#google-map-wrapper{
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-color: #e5e3df;
+}
