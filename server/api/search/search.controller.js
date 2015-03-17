@@ -50,7 +50,7 @@ exports.timeDependentTravelingSalesman = function (req, res) {
       return res.status(400).end();
     }
     // Ekki of margir leggir!
-    if (req.query.legs.length > 6) {
+    if (req.query.legs.length > 9) {
       return res.status(400).end();
     }
     if (req.query.legs.length !== req.query.durs.length) {
