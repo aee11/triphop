@@ -64,7 +64,7 @@ angular.module('triphopApp')
 				// or server returns response with an error status.
 				console.log('error')
 		});
-      
+
 		$scope.getAirportLocation = function(airportCode){
 			for(var i=0; i<$scope.airportData.length; i++){
 				var result;
@@ -146,11 +146,14 @@ angular.module('triphopApp')
 		
     $scope.route = {};
     $scope.search = function() {
-      fareQuery = FareRoute.queryBuilder($scope.query);
+      var query = FareQuery.getQuery();
+      console.log(query);
+      var fareQuery = FareRoute.queryBuilder(query);
       console.log(fareQuery);
-		  FareRoute.nnApi.getNNRoute(fareQuery, function (route) {
+		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
-        $scope.updateMapPath();
+        //$scope.updateMapPath();
+        console.log($scope.route);
       }, function (err) {
         console.err(err);
       });
@@ -168,6 +171,7 @@ angular.module('triphopApp')
 			console.log(lat);
 			console.log(lon);
 			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon));
+      FareQuery.addLeg(chosenAirport, duration);
 			
       // $scope.query.stops.push("");
       // $scope.query.durs.push("");
