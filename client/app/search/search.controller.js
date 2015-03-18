@@ -198,7 +198,6 @@ angular.module('triphopApp')
     $scope.route = {};
     $scope.search = function() {
       var query = FareQuery.getQuery();
-      console.log('query');
       console.log(query);
       var fareQuery = FareRoute.queryBuilder(query);
       console.log(fareQuery);
@@ -224,6 +223,7 @@ angular.module('triphopApp')
 			// console.log('adding marker at ' + lat + ', ' + lon);
 			// console.log(lat);
 			// console.log(lon);
+			$scope.query.durs.push(duration);
       $scope.query.stops.push({
 				lat: lat,
 				lon: lon,
