@@ -1,62 +1,48 @@
 'use strict';
 var scope;
 
-// function initialize() {
-	// var contentString = '<div id="content">'+
-      // '<div id="siteNotice">'+
-      // '</div>'+
-      // '<h2 id="firstHeading" class="firstHeading">Location</h2>'+
-      // '<div id="bodyContent">'+
-			// '<button onClick="console.log(' + "'hello'" + ')" >Click me!</button>'+
-      // '</div>'+
-      // '</div>';
+function initialize() {
+	var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h2 id="firstHeading" class="firstHeading">Location</h2>'+
+      '<div id="bodyContent">'+
+			'<button onClick="console.log(' + "'hello'" + ')" >Click me!</button>'+
+      '</div>'+
+      '</div>';
 
-	// infowindow = new google.maps.InfoWindow({
-			// content: contentString
-	// });
+	infowindow = new google.maps.InfoWindow({
+			content: contentString
+	});
 
-  // infowindow.open(map,markers[0]);
-// }
+  //infowindow.open(map,markers[0]);
+}
 
 
 
 angular.module('triphopApp')
   .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
-		
-		//plz remove
-		scope = $scope;
-		
     var startLocation = FareQuery.getStartLocation();
-		
     if (_.isObject(startLocation)) {
-			$scope.startLocation = startLocation;
-			startLocation = undefined;
+      
     } else {
       console.log('redirecting to landing page');
       FareQuery.setStartLocation(null);
       $window.location.href = '/';
       return;
     }
-			
-    $scope.query = {
-      startLoc: "",
-      stops: [""],
-      durs: [""],
-			dur: "",
-			loc: ""
-    };
+		
 		$scope.markers = [];
 		$scope.infowindow = undefined;
-		$scope.currentBounds = undefined;
 		
 		//**** Get airport data json file
+		$scope.airportData;
 		// Simple GET request example :
 		$http.get('/assets/airports_short.json').
 			success(function(data, status, headers, config) {
 				// this callback will be called asynchronously
 				// when the response is available
 				$scope.airportData = data;
-				$scope.initStartLocation();
 			}).
 			error(function(data, status, headers, config) {
 				// called asynchronously if an error occurs
@@ -72,7 +58,7 @@ angular.module('triphopApp')
 					var lat = $scope.airportData[i].lat;
 					var lon = $scope.airportData[i]['long'];
 					
-					// Cut off second '.' and everything beyond it
+					// Cut off second . and everything beyond it
 					var formatLatLon = function(ll){
 						var dots = 0;
 						for(var i=0; i<ll.length; i++){
@@ -109,38 +95,46 @@ angular.module('triphopApp')
 			$scope.initGoogleMap();
     });
 
+		scope = $scope;
 		
 		$scope.initGoogleMap = function(){
-		
+			$scope.addMarkerLL = function(lat, lon){
+				$scope.addMarker(new google.maps.LatLng(lat, lon))
+			}
+			$scope.addMarker = function(location, info) {
+				var marker = new google.maps.Marker({
+					position: location,
+					map: $scope.map,
+					animation: google.maps.Animation.DROP
+				});
+				$scope.markers.push(marker);
+			}
+			$scope.addMarker(new google.maps.LatLng(63.985, -22.605));
 			$scope.google = google;
-
 		}
 		
-		$scope.initStartLocation = function(){
-			var startAirport = $scope.startLocation.airports[0];
-			var startCoordinates = $scope.getAirportLocation(startAirport);
-			var lat = startCoordinates.latitude;
-			var lon = startCoordinates.longitude;
-			$scope.addMarker(new google.maps.LatLng(lat, lon));
-			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
-		}
+<<<<<<< HEAD
 		
+    if (angular.isObject(FareRoute.uiObject.query)) {
+      console.log(FareRoute.uiObject.query);
+      $scope.query = FareRoute.uiObject.query;
+      // initialize(); // Smá ljótt
+    } else {
+      console.log('going to landing page');
+      // $location.path('main');
+      // return;
+    }
+=======
+		// latitude: "63.985", longitude: "-22.605.556"
+>>>>>>> 574d3ebbe623c12d1df96e3e9164ac09b179e51e
 		
-		// marker functions
-		$scope.addMarkerLL = function(lat, lon){
-			$scope.addMarker(new google.maps.LatLng(lat, lon))
-		}
-		
-		$scope.addMarker = function(location, info) {
-			var marker = new google.maps.Marker({
-				position: location,
-				map: $scope.map,
-				animation: google.maps.Animation.DROP
-			});
-			$scope.markers.push(marker);
-		}
-		
-
+    $scope.query = {
+      startLoc: "",
+      stops: [""],
+      durs: [""],
+			dur: "",
+			loc: ""
+    };
 		
     $scope.route = {};
     $scope.search = function() {
