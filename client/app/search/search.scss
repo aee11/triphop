@@ -92,3 +92,10 @@ button{
 .animate-enter.animate-enter-active {
   opacity: 1;
 }
+
+@media screen and (max-width: 1200px) { 
+  .cont {
+    width: 80%;
+    left: 10%;
+  }
+}
