@@ -105,7 +105,7 @@ angular.module('triphopApp')
 			
 			//**** Get airport data json file
 			// Simple GET request example :
-			$http.get('/assets/airports_short.json').
+			$http.get('/assets/airports_new.json').
 				success(function(data, status, headers, config) {
 					// this callback will be called asynchronously
 					// when the response is available
@@ -122,6 +122,7 @@ angular.module('triphopApp')
 		$scope.initStartLocation = function(){
 			var startAirport = $scope.startLocation.airports[0];
 			var startCoordinates = $scope.getAirportLocation(startAirport);
+			console.log(startCoordinates);
 			var lat = startCoordinates.latitude;
 			var lon = startCoordinates.longitude;
 			$scope.query.lat = lat;
