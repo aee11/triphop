@@ -6,17 +6,17 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12">
-          <h1>Start your adventure!</h1>
+          <h1>Begin your adventure!</h1>
         </div>
       </div>
       <div class="row">
         <div class="col-xs-1"></div>
         <div class="col-xs-4">
-          <input type="text" class="form-control" placeholder="Start location" ng-model="query.startLoc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
+          <input type="text" class="form-control" placeholder="Starting location" ng-model="startingLocation" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
         </div>
         <div class="col-xs-4">
             <div class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="query.startDate" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="startDate" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>

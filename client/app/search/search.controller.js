@@ -21,10 +21,17 @@ function initialize() {
 
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, FareRoute, $http, $location, GoogleMapsInitializer) {
 
-		// remove plz
-		scope = $scope;
+  .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
+    var startLocation = FareQuery.getStartLocation();
+    if (_.isObject(startLocation)) {
+      
+    } else {
+      console.log('redirecting to landing page');
+      FareQuery.setStartLocation(null);
+      $window.location.href = '/';
+      return;
+    }
 		
 		$scope.markers = [];
 		$scope.infowindow = undefined;
@@ -76,8 +83,6 @@ angular.module('triphopApp')
 			}
 		}
 		
-		
-		// * initialize map:
     GoogleMapsInitializer.mapsInitialized.then(function () {
       var mapOptions = {
         zoom: 5,
@@ -90,6 +95,7 @@ angular.module('triphopApp')
 			$scope.google = google;
 			$scope.initGoogleMap();
     });
+
 		
 		$scope.initGoogleMap = function(){
 			$scope.addMarkerLL = function(lat, lon){
@@ -107,16 +113,6 @@ angular.module('triphopApp')
 			$scope.google = google;
 		}
 		
-		
-    if (angular.isObject(FareRoute.uiObject.query)) {
-      console.log(FareRoute.uiObject.query);
-      $scope.query = FareRoute.uiObject.query;
-      // initialize(); // Smá ljótt
-    } else {
-      console.log('going to landing page');
-      // $location.path('main');
-      // return;
-    }
 		
     $scope.query = {
       startLoc: "",

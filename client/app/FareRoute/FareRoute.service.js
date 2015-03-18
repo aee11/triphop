@@ -33,7 +33,6 @@ angular.module('triphopApp')
 
     var getLocation = function(prefix) {
       return $http.get('http://api.dohop.com/api/v1/picker/en/' + prefix).then(function(response){
-        console.log(response);
         return response.data.matches;
       });
     };
