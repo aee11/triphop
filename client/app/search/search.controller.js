@@ -220,13 +220,45 @@ angular.module('triphopApp')
         var infoWindow = new google.maps.InfoWindow({
           content: compiledContent[0]
         });
+        infoWindow.airport = airport;
         infoWindows.push(infoWindow);
         $scope.google.maps.event.addListener(marker, 'click', function() {
           infoWindow.open($scope.map, marker);
         });
       }
-
 		}
+
+    var getUpdatedContent = function (currentContent, airport) {
+      console.log(currentContent);
+      var from = _.find($scope.route.routeFares, function(fare) {
+        return fare.b == airport;
+      });
+      var to = _.find($scope.route.routeFares, function(fare) {
+        return fare.a == airport;
+      });
+      console.log(from);
+      console.log(to);
+      var fromDate = moment(from.d1).format('D MMM');
+      var toDate = moment(to.d1).format('D MMM');
+      var h5 = document.createElement('h5');
+      var newContent = from.a + ' (' + fromDate +') <span class="glyphicon plane glyphicon-plane" aria-hidden="true"></span> ' +
+      airport + ' <span class="glyphicon plane glyphicon-plane" aria-hidden="true"></span> ' +
+      to.b + ' (' + toDate + ')';
+      h5.innerHTML = newContent;
+      // var divContent = currentContent.firstChild;
+      var durationOfStayPara = currentContent.lastChild;
+      currentContent.insertBefore(h5, durationOfStayPara);
+    };
+
+    var updateInfowindows = function() {
+      _.forEach(infoWindows, function(infoWindow) {
+        var currentContent = infoWindow.getContent();
+        var updatedConent = getUpdatedContent(currentContent, infoWindow.airport);
+        // var compiledContent = $compile(updatedContent)($scope);
+        // infoWindow.setContent(compiledContent);
+      })
+      console.log(infoWindows);
+    };
 		
 
 		$scope.removeStop = function(location){
@@ -262,7 +294,7 @@ angular.module('triphopApp')
 		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
         drawRoute(route.routeFares);
-
+        updateInfowindows();
         console.log($scope.route);
       }, function (err) {
         console.error(err);
