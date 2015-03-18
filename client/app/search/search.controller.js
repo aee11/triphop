@@ -21,6 +21,7 @@ function initialize() {
 
 
 angular.module('triphopApp')
+
   .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
     var startLocation = FareQuery.getStartLocation();
     
@@ -52,15 +53,33 @@ angular.module('triphopApp')
 				// called asynchronously if an error occurs
 				// or server returns response with an error status.
 				console.log('error')
-			});
-			
-			
+		});
+				
+		$scope.formatLatLon = undefined;
 		$scope.getAirportLocation = function(airportCode){
 			for(var i=0; i<$scope.airportData.length; i++){
 				var result;
 				if($scope.airportData[i].airportCode == airportCode){
 					var lat = $scope.airportData[i].lat;
 					var lon = $scope.airportData[i]['long'];
+					
+					// Cut off second . and everything beyond it
+					var formatLatLon = function(ll){
+						var dots = 0;
+						for(var i=0; i<ll.length; i++){
+							if(ll.substring(i,i+1) === '.'){
+								dots++;
+							}
+							if(dots == 2){
+								return ll.substring(0, i);
+							}
+						}
+						return ll;
+					}
+					lat = formatLatLon(lat);
+					lon = formatLatLon(lon);
+					
+					$scope.formatLatLon = formatLatLon;
 					
 					result = {latitude: lat, longitude: lon}
 					return result;
@@ -70,8 +89,8 @@ angular.module('triphopApp')
 		
     GoogleMapsInitializer.mapsInitialized.then(function () {
       var mapOptions = {
-        zoom: 8,
-        center: new google.maps.LatLng(-34.397, 150.644),
+        zoom: 5,
+        center: new google.maps.LatLng(63.985, -22.605),
         disableDefaultUI: true,
         minZoom: 1,
         maxZoom: 10
@@ -81,7 +100,6 @@ angular.module('triphopApp')
 			$scope.initGoogleMap();
     });
 
-		scope = $scope;
 		
 		$scope.initGoogleMap = function() {
 
@@ -96,11 +114,12 @@ angular.module('triphopApp')
 				});
 				$scope.markers.push(marker);
 			}
+
       var startLatLng = $scope.getAirportLocation(startLocation.airports[0]);
 			$scope.addMarker(new google.maps.LatLng(startLatLng.latitude, startLatLng.longitude));
+			$scope.google = google;
 		}
 		
-		// latitude: "63.985", longitude: "-22.605.556"
 		
     $scope.route = {};
     $scope.search = function() {
@@ -115,10 +134,21 @@ angular.module('triphopApp')
     };
 
     $scope.addStop = function() {
-			console.log($scope.query.dur + " " + $scope.query.loc);
-			$scope.addMarkerLL($scope.query.dur, $scope.query.loc);
+			var chosenAirport = $scope.query.loc.airports[0];
+			var duration = $scope.query.dur;
+			var location = $scope.getAirportLocation(chosenAirport);
+			console.log(chosenAirport);
+			console.log(location);
+			var lat = location.latitude;
+			var lon = location.longitude;
+			console.log('adding marker at ' + lat + ', ' + lon);
+			console.log(lat);
+			console.log(lon);
+			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon));
+			
       // $scope.query.stops.push("");
       // $scope.query.durs.push("");
+			
     }
 		
 		
