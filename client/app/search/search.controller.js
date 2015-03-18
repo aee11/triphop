@@ -243,7 +243,7 @@ angular.module('triphopApp')
       var oldH5 = currentContent.getElementsByTagName('h5');
       console.log(oldH5);
       if (oldH5.length > 0) {
-        oldH5[0]kef.parentNode.removeChild(oldH5[0]);
+        oldH5[0].parentNode.removeChild(oldH5[0]);
       }
       var h5 = document.createElement('h5');
       var newContent = from.a + ' (' + fromDate +') <span class="glyphicon plane glyphicon-plane" aria-hidden="true"></span> ' +
