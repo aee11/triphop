@@ -348,6 +348,7 @@ angular.module('triphopApp')
       info.durationOfStay = duration;
 			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon), chosenAirport, info);
       $scope.stops.loc = '';
+      document.getElementById('destField').focus();
     }
 		
 		$scope.today = function() {

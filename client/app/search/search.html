@@ -4,7 +4,7 @@
     <div class="col-md-12">
       <form name="newStop">
         <div class="col-xs-5 control-group" ng-class="{'has-error': newStop.loc.$invalid}">
-					<input type="text" class="form-control" placeholder="Where do you want to go?" ng-model="stops.loc" name="loc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" typeahead-on-select="makevalid($item, $model, $label)" required/>
+					<input id="destField" type="text" class="form-control" placeholder="Where do you want to go?" ng-model="stops.loc" name="loc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" typeahead-on-select="makevalid($item, $model, $label)" required/>
           
         </div>
         <div class="col-xs-6">
