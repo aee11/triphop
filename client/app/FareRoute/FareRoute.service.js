@@ -18,10 +18,14 @@ angular.module('triphopApp')
     });
 
     var queryBuilder = function(query) {
+			var airports = [];
+			for(var i=0; i<query.stops.length; i++){
+				airports.push(query.stops[i].airport);
+			}
       return {
         startLoc: query.startLoc.airports[0],
         startDate: moment(query.startDate).format('YYYY-MM-DD'),
-        legs: query.stops,
+        legs: airports,
         durs: query.durs,
         userCountry: 'IS',
         currency: 'ISK'
