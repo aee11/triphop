@@ -136,31 +136,49 @@ angular.module('triphopApp')
 			$scope.addMarker(new google.maps.LatLng(lat, lon));
 		}
 		
-		
+		$scope.flightPath = null;
 		var drawPolyLines = function(locations) {
-			var flightPlanCoordinates = [];
-			for(var i=0; i<$scope.stops.stops.length; i++){
-				var lat = $scope.stops.stops[i].lat;
-				var lon = $scope.stops.stops[i].lon;
-				flightPlanCoordinates.push(
-					new $scope.google.maps.LatLng(lat, lon));
-			}
-			var flightPath = new google.maps.Polyline({
-				path: flightPlanCoordinates,
+			// var flightPlanCoordinates = [];
+			// for(var i=0; i<$scope.stops.stops.length; i++){
+			// 	var lat = $scope.stops.stops[i].lat;
+			// 	var lon = $scope.stops.stops[i].lon;
+			// 	flightPlanCoordinates.push(
+			// 		new $scope.google.maps.LatLng(lat, lon));
+			// }
+   //    _.forEach(locations, function(location) {
+   //      var lat = lo
+   //    });
+      var arrowSymbol = {
+        path: $scope.google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+      };
+			$scope.flightPath = new google.maps.Polyline({
+				path: locations,
 				geodesic: true,
 				strokeColor: '#FF0000',
-				strokeOpacity: 1.0,
-				strokeWeight: 2
+				strokeOpacity: 0.4,
+				strokeWeight: 1,
+        icons: [{
+          icon: arrowSymbol,
+          offset: '50px',
+          repeat: '50px'
+        }]
 			});
-			flightPath.setMap($scope.map);
+			$scope.flightPath.setMap($scope.map);
 		}
 
     var drawRoute = function(route) {
+      // Remove old route
+      if ($scope.flightPath) {
+        $scope.flightPath.setMap(null);
+      }
       var locations = [];
       _.forEach(route, function (fare) {
         var airportLocation = $scope.getAirportLocation(fare.a);
-        locations.push(airportLocation);
+        var globeLocation = new $scope.google.maps.LatLng(airportLocation.latitude, airportLocation.longitude);
+        locations.push(globeLocation);
       });
+      // Adding last leg home:
+      locations.push(locations[0]);
       drawPolyLines(locations);
     };
 		
