@@ -4,9 +4,7 @@ angular.module('triphopApp')
   .service('FareQuery', function () {
     var query = {
       stops: [],
-      durs: [],
-      dur: '',
-      loc: ''
+      durs: []
     };
 
     var setStartLocation = function(location) {

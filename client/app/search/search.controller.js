@@ -44,7 +44,6 @@ angular.module('triphopApp')
       }
     }
 		check();
-		startLocation = undefined;
 		
 		// $scope.query.markers = [];
 		$scope.markers = [];
@@ -105,7 +104,7 @@ angular.module('triphopApp')
 			
 			//**** Get airport data json file
 			// Simple GET request example :
-			$http.get('/assets/airports_short.json').
+			$http.get('/assets/airports_new.json').
 				success(function(data, status, headers, config) {
 					// this callback will be called asynchronously
 					// when the response is available
@@ -120,7 +119,8 @@ angular.module('triphopApp')
 		}
 		
 		$scope.initStartLocation = function(){
-			var startAirport = $scope.startLocation.airports[0];
+      console.log(startLocation);
+			var startAirport = startLocation.airports[0];
 			var startCoordinates = $scope.getAirportLocation(startAirport);
 			var lat = startCoordinates.latitude;
 			var lon = startCoordinates.longitude;
@@ -133,13 +133,8 @@ angular.module('triphopApp')
 		
 		
 		// polylines
-		$scope.drawPolyLines = function(){
-			var flightPlanCoordinates = [
-				new $scope.google.maps.LatLng(37.772323, -122.214897),
-				new $scope.google.maps.LatLng(21.291982, -157.821856),
-				new $scope.google.maps.LatLng(-18.142599, 178.431),
-				new $scope.google.maps.LatLng(-27.46758, 153.027892)
-			];
+		var drawPolyLines = function(locations) {
+			var flightPlanCoordinates = [];
 			for(var i=0; i<$scope.query.stops.length; i++){
 				var lat = $scope.query.stops[i].lat;
 				var lon = $scope.query.stops[i].lon;
@@ -155,6 +150,15 @@ angular.module('triphopApp')
 			});
 			flightPath.setMap($scope.map);
 		}
+
+    var drawRoute = function(route) {
+      var locations = [];
+      _.forEach(route, function (fare) {
+        var airportLocation = getAirportLocation(fare.a);
+        locations.push(airportLocation);
+      });
+      drawPolyLines(locations);
+    };
 		
 		
 		// marker functions
@@ -193,15 +197,17 @@ angular.module('triphopApp')
     $scope.route = {};
     $scope.search = function() {
       var query = FareQuery.getQuery();
+      console.log('query');
       console.log(query);
       var fareQuery = FareRoute.queryBuilder(query);
       console.log(fareQuery);
 		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
-        //$scope.updateMapPath();
+        drawRoute(route.routeFares);
+
         console.log($scope.route);
       }, function (err) {
-        console.err(err);
+        console.error(err);
       });
     };
 		
@@ -209,7 +215,8 @@ angular.module('triphopApp')
 			var chosenAirport = $scope.query.loc.airports[0];
 			var duration = $scope.query.dur;
 			var location = $scope.getAirportLocation(chosenAirport);
-			var lat = location.latitude;
+			FareQuery.addLeg(chosenAirport, duration);
+      var lat = location.latitude;
 			var lon = location.longitude;
 			// console.log(chosenAirport);
 			// console.log(location);
