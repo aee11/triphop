@@ -252,8 +252,14 @@ angular.module('triphopApp')
 
     var updateInfowindows = function() {
       _.forEach(infoWindows, function(infoWindow) {
-        var currentContent = infoWindow.getContent();
-        var updatedConent = getUpdatedContent(currentContent, infoWindow.airport);
+        var index = _.findIndex($scope.route.routeFares, function(fare) {
+          return fare.a == infoWindow.airport || fare.b == infoWindow.airport
+        });
+        if (index > -1) {
+          var currentContent = infoWindow.getContent();
+          var updatedConent = getUpdatedContent(currentContent, infoWindow.airport);
+        }
+        
         // var compiledContent = $compile(updatedContent)($scope);
         // infoWindow.setContent(compiledContent);
       })
@@ -307,6 +313,10 @@ angular.module('triphopApp')
     };
 		
     $scope.addStop = function() {
+      if (!angular.isObject($scope.stops.loc)) {
+        toaster.pop('warning', 'Please select a proper location');
+        return;
+      }
 			var chosenAirport = $scope.stops.loc.airports[0];
 			console.log("Chosen airport: " + chosenAirport);
 			var duration = $scope.stops.dur;
