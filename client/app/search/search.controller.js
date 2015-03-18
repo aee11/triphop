@@ -24,7 +24,7 @@ var scope;
 
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
+  .controller('SearchCtrl', function ($scope, $compile, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
 		
 		//plz remove
 		scope = $scope;
@@ -50,6 +50,7 @@ angular.module('triphopApp')
 		
 		// $scope.stops.markers = [];
 		$scope.markers = [];
+    var infoWindows = [];
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
 		$scope.formatLatLon = undefined;
@@ -133,7 +134,7 @@ angular.module('triphopApp')
 			$scope.stops.loc = $scope.startLocation;
 			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
 			// $scope.addStop();
-			$scope.addMarker(new google.maps.LatLng(lat, lon));
+			$scope.addMarker(new google.maps.LatLng(lat, lon), startAirport);
 		}
 		
 		$scope.flightPath = null;
@@ -187,30 +188,66 @@ angular.module('triphopApp')
 		// $scope.addMarkerLL = function(lat, lon){
 			// $scope.addMarker(new google.maps.LatLng(lat, lon))
 		// }
+    var createContentString = function(info) {
+      var contentString = '<div>' +
+      '<h4>' +
+      info.name +', ' + info.country +
+      ' <span class="label label-info">' +
+      info.airports[0] +
+      '</span>' +
+      '</h4>' +
+      '<p>' + info.durationOfStay + ' days ' +
+      '<span class="remove-marker-button"><button id="' + info.airports[0] + '" type="button" class="btn btn-danger btn-xs" ng-click="removeDestination($event)">' +
+      'Remove' +
+      '</button></span></p>' +
+      '</div>';
+      return contentString;
+    };
 		
+
 		$scope.addMarker = function(location, airport, info) {
 			var marker = new google.maps.Marker({
+        title: airport,
 				position: location,
 				map: $scope.map,
 				animation: google.maps.Animation.DROP
 			});
 			marker.airport = airport;
 			$scope.markers.push(marker);
+      if (info) { // then add InfoWindow
+        var contentString = createContentString(info);
+        var compiledContent = $compile(contentString)($scope);
+        var infoWindow = new google.maps.InfoWindow({
+          content: compiledContent[0]
+        });
+        infoWindows.push(infoWindow);
+        $scope.google.maps.event.addListener(marker, 'click', function() {
+          infoWindow.open($scope.map, marker);
+        });
+      }
+
 		}
 		
+
 		$scope.removeStop = function(location){
-			for(var i=0; i<$scope.stops.stops.length; i++){
-				if($scope.stops.stops[i].airport == location){
-					console.log(location + ' stop removed');
-					$scope.stops.stops.splice(i, 1);
-					console.log($scope.stops.stops);
-				}
-			}
+			// for(var i=0; i<$scope.stops.stops.length; i++){
+			// 	if($scope.stops.stops[i].airport == location){
+			// 		console.log(location + ' stop removed');
+			// 		$scope.stops.stops.splice(i, 1);
+   //        FareQuery.removeLeg(location);
+			// 		console.log($scope.stops.stops);
+			// 	}
+			// }
+      FareQuery.removeLeg(location);
+      if ($scope.flightPath) {
+        $scope.flightPath.setOptions({ strokeColor: '#7e7e7e' });
+      }
 			for(var i=0; i<$scope.markers.length; i++){
 				if($scope.markers[i].airport == location){
 					console.log(location + ' marker removed');
 					$scope.markers[i].setMap(null);
 					$scope.markers.splice(i,1);
+          infoWindows.splice(i,1);
 					console.log($scope.markers);
 				}
 			}
@@ -256,7 +293,9 @@ angular.module('triphopApp')
 				airport: chosenAirport,
 				duration: duration
 			});
-			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon), chosenAirport);
+      var info = $scope.stops.loc;
+      info.durationOfStay = duration;
+			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon), chosenAirport, info);
     }
 		
 		$scope.today = function() {
@@ -295,6 +334,11 @@ angular.module('triphopApp')
       console.log($scope.newStop.loc.$valid);
       $scope.newStop.loc.$valid = false;
 
+    }
+
+    $scope.removeDestination = function (event) {
+      var airportToRemove = event.target.id;
+      $scope.removeStop(airportToRemove);
     }
 
 });
