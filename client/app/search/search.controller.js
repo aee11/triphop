@@ -265,4 +265,10 @@ angular.module('triphopApp')
 
     $scope.getLocation = FareRoute.getLocation;
 		
+    $scope.makevalid = function(item,model,label){
+      console.log($scope.newStop.loc.$valid);
+      $scope.newStop.loc.$valid = false;
+
+    }
+
 });

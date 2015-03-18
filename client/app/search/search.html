@@ -1,35 +1,39 @@
-
-    <div class="container">
-      <div class="row">
-				<div class="col-md-12">
-          <div class="col-xs-4">
-            <input type="text" class="form-control" placeholder="Duration" ng-model="query.dur"/>
+<div class="container">
+  <div class="row">
+		<div class="col-md-12">
+      <form name="newStop">
+        <div class="col-xs-4 control-group" ng-class="{'has-error': newStop.duration.$invalid}">
+          <input type="number" min="3" max="60" name="duration" class="form-control" placeholder="Duration" ng-model="query.dur" required/>
+        </div>
+        <div class="col-xs-7">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Destination" ng-model="query.loc" name="loc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" typeahead-on-select="makevalid($item, $model, $label)" required/>
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="submit" ng-click="addStop()" ng-disabled="newStop.$invalid">
+                Add
+              </button>
+            </span>
           </div>
-          <div class="col-xs-8">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Destination" ng-model="query.loc" typeahead="location as location.name for location in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-template-url="typeaheadLocations.html" typeahead-wait-ms="300" class="form-control" />
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="button" ng-click="addStop()">
-                  Add
-                </button>
-                <button class="btn btn-assertive" type="button" ng-click="search()">
-                  Search
-                </button>
-              </span>
-            </div>
-            
+        </div>
+        <div class="col-xs-1">
+          <div class="input-group">
+            <button class="btn btn-primary" type="submit" ng-click="search()">
+              Search
+            </button>
           </div>
-					
-
-					
-		<!-- 			<span class="input-group-btn">
-							<button class="btn btn-default" type="button" ng-click="addStop()">
-								Add
-							</button>
-					</span> -->
-				</div>
-      </div>
+        </div>  
+              
+            </span>
+          </div>
+        </div>
+      </form>
 		</div>
+  </div>
+</div>
+
+<div class="bottom-box">
+  Total price for trip: {{route.totalPrice}}!
+</div>
 
 
 
