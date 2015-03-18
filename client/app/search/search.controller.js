@@ -129,17 +129,18 @@ angular.module('triphopApp')
 			$scope.query.lon = lon;
 			$scope.query.loc = $scope.startLocation;
 			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
-			$scope.addStop();
+			// $scope.addStop();
+			$scope.addMarker(new google.maps.LatLng(lat, lon));
 		}
 		
 		
 		// polylines
 		$scope.drawPolyLines = function(){
 			var flightPlanCoordinates = [
-				new $scope.google.maps.LatLng(37.772323, -122.214897),
-				new $scope.google.maps.LatLng(21.291982, -157.821856),
-				new $scope.google.maps.LatLng(-18.142599, 178.431),
-				new $scope.google.maps.LatLng(-27.46758, 153.027892)
+				// new $scope.google.maps.LatLng(37.772323, -122.214897),
+				// new $scope.google.maps.LatLng(21.291982, -157.821856),
+				// new $scope.google.maps.LatLng(-18.142599, 178.431),
+				// new $scope.google.maps.LatLng(-27.46758, 153.027892)
 			];
 			for(var i=0; i<$scope.query.stops.length; i++){
 				var lat = $scope.query.stops[i].lat;
