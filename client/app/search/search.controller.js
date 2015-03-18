@@ -112,10 +112,8 @@ angular.module('triphopApp')
 
 		
 		$scope.initGoogleMap = function(){
-
-		
 			$scope.google = google;
-
+			$scope.initStartLocation();
 		}
 		
 		$scope.initStartLocation = function(){
