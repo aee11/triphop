@@ -35,9 +35,9 @@ angular.module('triphopApp')
         if (_.isObject(startLocation)) {
 				$scope.startLocation = startLocation;
         $scope.query = FareQuery.getQuery();
-        console.log($scope.query);
+        // console.log($scope.query);
       } else {
-        console.log('redirecting to landing page');
+        // console.log('redirecting to landing page');
         FareQuery.setStartLocation(null);
         $window.location.href = '/';
         return;
@@ -46,26 +46,12 @@ angular.module('triphopApp')
 		check();
 		startLocation = undefined;
 		
+		// $scope.query.markers = [];
 		$scope.markers = [];
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
-		
-		//**** Get airport data json file
-		// Simple GET request example :
-		$http.get('/assets/airports_short.json').
-			success(function(data, status, headers, config) {
-				// this callback will be called asynchronously
-				// when the response is available
-				$scope.airportData = data;
-				$scope.initStartLocation();
-			}).
-			error(function(data, status, headers, config) {
-				// called asynchronously if an error occurs
-				// or server returns response with an error status.
-				console.log('error')
-		});
-				
 		$scope.formatLatLon = undefined;
+		
 		$scope.getAirportLocation = function(airportCode){
 			for(var i=0; i<$scope.airportData.length; i++){
 				var result;
@@ -99,7 +85,7 @@ angular.module('triphopApp')
 		
     GoogleMapsInitializer.mapsInitialized.then(function () {
       var mapOptions = {
-        zoom: 5,
+        zoom: 3,
         center: new google.maps.LatLng(63.985, -22.605),
         disableDefaultUI: true,
         minZoom: 1,
@@ -113,7 +99,21 @@ angular.module('triphopApp')
 		
 		$scope.initGoogleMap = function(){
 			$scope.google = google;
-			$scope.initStartLocation();
+			
+			//**** Get airport data json file
+			// Simple GET request example :
+			$http.get('/assets/airports_short.json').
+				success(function(data, status, headers, config) {
+					// this callback will be called asynchronously
+					// when the response is available
+					$scope.airportData = data;
+					$scope.initStartLocation();
+				}).
+				error(function(data, status, headers, config) {
+					// called asynchronously if an error occurs
+					// or server returns response with an error status.
+					console.log('error')
+			});
 		}
 		
 		$scope.initStartLocation = function(){
@@ -121,26 +121,71 @@ angular.module('triphopApp')
 			var startCoordinates = $scope.getAirportLocation(startAirport);
 			var lat = startCoordinates.latitude;
 			var lon = startCoordinates.longitude;
-			$scope.addMarker(new google.maps.LatLng(lat, lon));
+			$scope.query.lat = lat;
+			$scope.query.lon = lon;
+			$scope.query.loc = $scope.startLocation;
 			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
+			$scope.addStop();
+		}
+		
+		
+		// polylines
+		$scope.drawPolyLines = function(){
+			var flightPlanCoordinates = [
+				new $scope.google.maps.LatLng(37.772323, -122.214897),
+				new $scope.google.maps.LatLng(21.291982, -157.821856),
+				new $scope.google.maps.LatLng(-18.142599, 178.431),
+				new $scope.google.maps.LatLng(-27.46758, 153.027892)
+			];
+			for(var i=0; i<$scope.query.stops.length; i++){
+				var lat = $scope.query.stops[i].lat;
+				var lon = $scope.query.stops[i].lon;
+				flightPlanCoordinates.push(
+					new $scope.google.maps.LatLng(lat, lon));
+			}
+			var flightPath = new google.maps.Polyline({
+				path: flightPlanCoordinates,
+				geodesic: true,
+				strokeColor: '#FF0000',
+				strokeOpacity: 1.0,
+				strokeWeight: 2
+			});
+			flightPath.setMap($scope.map);
 		}
 		
 		
 		// marker functions
-		$scope.addMarkerLL = function(lat, lon){
-			$scope.addMarker(new google.maps.LatLng(lat, lon))
-		}
+		// $scope.addMarkerLL = function(lat, lon){
+			// $scope.addMarker(new google.maps.LatLng(lat, lon))
+		// }
 		
-		$scope.addMarker = function(location, info) {
+		$scope.addMarker = function(location, airport, info) {
 			var marker = new google.maps.Marker({
 				position: location,
 				map: $scope.map,
 				animation: google.maps.Animation.DROP
 			});
+			marker.airport = airport;
 			$scope.markers.push(marker);
 		}
 		
-
+		$scope.removeStop = function(location){
+			for(var i=0; i<$scope.query.stops.length; i++){
+				if($scope.query.stops[i].airport == location){
+					console.log(location + ' stop removed');
+					$scope.query.stops.splice(i, 1);
+					console.log($scope.query.stops);
+				}
+			}
+			for(var i=0; i<$scope.markers.length; i++){
+				if($scope.markers[i].airport == location){
+					console.log(location + ' marker removed');
+					$scope.markers[i].setMap(null);
+					$scope.markers.splice(i,1);
+					console.log($scope.markers);
+				}
+			}
+		}
 		
     $scope.route = {};
     $scope.search = function() {
@@ -153,30 +198,31 @@ angular.module('triphopApp')
         console.err(err);
       });
     };
-
+		
     $scope.addStop = function() {
 			var chosenAirport = $scope.query.loc.airports[0];
 			var duration = $scope.query.dur;
 			var location = $scope.getAirportLocation(chosenAirport);
-			console.log(chosenAirport);
-			console.log(location);
 			var lat = location.latitude;
 			var lon = location.longitude;
-			console.log('adding marker at ' + lat + ', ' + lon);
-			console.log(lat);
-			console.log(lon);
-			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon));
-			
-      // $scope.query.stops.push("");
-      // $scope.query.durs.push("");
-			
+			// console.log(chosenAirport);
+			// console.log(location);
+			// console.log('adding marker at ' + lat + ', ' + lon);
+			// console.log(lat);
+			// console.log(lon);
+      $scope.query.stops.push({
+				lat: lat,
+				lon: lon,
+				airport: chosenAirport,
+				duration: duration
+			});
+			$scope.addMarker(new $scope.google.maps.LatLng(lat, lon), chosenAirport);
     }
-		
-		
 		
 		$scope.today = function() {
       $scope.query.startDate = new Date();
     };
+		
     $scope.today();
 
     $scope.clear = function () {
@@ -205,4 +251,4 @@ angular.module('triphopApp')
 
     $scope.getLocation = FareRoute.getLocation;
 		
-  });
+});
