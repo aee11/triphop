@@ -1,6 +1,7 @@
 'use strict';
 var scope;
 
+
 // function initialize() {
 	// var contentString = '<div id="content">'+
       // '<div id="siteNotice">'+
@@ -11,9 +12,11 @@ var scope;
       // '</div>'+
       // '</div>';
 
+
 	// infowindow = new google.maps.InfoWindow({
 			// content: contentString
 	// });
+
 
   // infowindow.open(map,markers[0]);
 // }
@@ -27,24 +30,19 @@ angular.module('triphopApp')
 		scope = $scope;
 		
     var startLocation = FareQuery.getStartLocation();
-		
-    if (_.isObject(startLocation)) {
-			$scope.startLocation = startLocation;
-			startLocation = undefined;
-    } else {
-      console.log('redirecting to landing page');
-      FareQuery.setStartLocation(null);
-      $window.location.href = '/';
-      return;
+    
+    var check = function() {
+        if (_.isObject(startLocation)) {
+        $scope.query = FareQuery.getQuery();
+        console.log($scope.query);
+      } else {
+        console.log('redirecting to landing page');
+        FareQuery.setStartLocation(null);
+        $window.location.href = '/';
+        return;
+      }
     }
-			
-    $scope.query = {
-      startLoc: "",
-      stops: [""],
-      durs: [""],
-			dur: "",
-			loc: ""
-    };
+		check();
 		$scope.markers = [];
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
@@ -111,6 +109,7 @@ angular.module('triphopApp')
 
 		
 		$scope.initGoogleMap = function(){
+
 		
 			$scope.google = google;
 
