@@ -122,17 +122,18 @@ angular.module('triphopApp')
       console.log(startLocation);
 			var startAirport = startLocation.airports[0];
 			var startCoordinates = $scope.getAirportLocation(startAirport);
+			console.log(startCoordinates);
 			var lat = startCoordinates.latitude;
 			var lon = startCoordinates.longitude;
 			$scope.query.lat = lat;
 			$scope.query.lon = lon;
 			$scope.query.loc = $scope.startLocation;
 			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
-			$scope.addStop();
+			// $scope.addStop();
+			$scope.addMarker(new google.maps.LatLng(lat, lon));
 		}
 		
 		
-		// polylines
 		var drawPolyLines = function(locations) {
 			var flightPlanCoordinates = [];
 			for(var i=0; i<$scope.query.stops.length; i++){
