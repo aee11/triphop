@@ -37,12 +37,17 @@ angular.module('triphopApp')
       return query.startLoc;
     };
 
+    var getQuery = function() {
+      return query;
+    };
+
     return {
       setStartLocation: setStartLocation,
       setStartDate: setStartDate,
       addLeg: addLeg,
       removeLeg: removeLeg,
-      getStartLocation: getStartLocation
+      getStartLocation: getStartLocation,
+      getQuery: getQuery
     };
 
   });

@@ -23,15 +23,19 @@ function initialize() {
 angular.module('triphopApp')
   .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
     var startLocation = FareQuery.getStartLocation();
-    if (_.isObject(startLocation)) {
-      
-    } else {
-      console.log('redirecting to landing page');
-      FareQuery.setStartLocation(null);
-      $window.location.href = '/';
-      return;
+    
+    var check = function() {
+        if (_.isObject(startLocation)) {
+        $scope.query = FareQuery.getQuery();
+        console.log($scope.query);
+      } else {
+        console.log('redirecting to landing page');
+        FareQuery.setStartLocation(null);
+        $window.location.href = '/';
+        return;
+      }
     }
-		
+		check();
 		$scope.markers = [];
 		$scope.infowindow = undefined;
 		
@@ -79,7 +83,8 @@ angular.module('triphopApp')
 
 		scope = $scope;
 		
-		$scope.initGoogleMap = function(){
+		$scope.initGoogleMap = function() {
+
 			$scope.addMarkerLL = function(lat, lon){
 				$scope.addMarker(new google.maps.LatLng(lat, lon))
 			}
@@ -91,18 +96,11 @@ angular.module('triphopApp')
 				});
 				$scope.markers.push(marker);
 			}
-			$scope.addMarker(new google.maps.LatLng(63.985, -22.605556));
+      var startLatLng = $scope.getAirportLocation(startLocation.airports[0]);
+			$scope.addMarker(new google.maps.LatLng(startLatLng.latitude, startLatLng.longitude));
 		}
 		
 		// latitude: "63.985", longitude: "-22.605.556"
-		
-    $scope.query = {
-      startLoc: "",
-      stops: [""],
-      durs: [""],
-			dur: "",
-			loc: ""
-    };
 		
     $scope.route = {};
     $scope.search = function() {
