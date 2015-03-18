@@ -81,3 +81,13 @@ button{
   -webkit-transform: rotate(7deg); /* Chrome, Safari, Opera */
   transform: rotate(90deg);
 }
+
+.animate-enter {
+  -webkit-transition: 2s linear all; /* Chrome */
+  transition: 2s linear all;
+  opacity: 0;
+}
+ 
+.animate-enter.animate-enter-active {
+  opacity: 1;
+}
