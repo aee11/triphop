@@ -240,6 +240,11 @@ angular.module('triphopApp')
       console.log(to);
       var fromDate = moment(from.d1).format('D MMM');
       var toDate = moment(to.d1).format('D MMM');
+      var oldH5 = currentContent.getElementsByTagName('h5');
+      console.log(oldH5);
+      if (oldH5.length > 0) {
+        oldH5[0]kef.parentNode.removeChild(oldH5[0]);
+      }
       var h5 = document.createElement('h5');
       var newContent = from.a + ' (' + fromDate +') <span class="glyphicon plane glyphicon-plane" aria-hidden="true"></span> ' +
       airport + ' <span class="glyphicon plane glyphicon-plane" aria-hidden="true"></span> ' +
@@ -277,7 +282,7 @@ angular.module('triphopApp')
 			// 	}
 			// }
       FareQuery.removeLeg(location);
-      if ($scope.flightPath) {
+    if   ($scope.flightPath) {
         $scope.flightPath.setOptions({ strokeColor: '#7e7e7e' });
       }
 			for(var i=0; i<$scope.markers.length; i++){
