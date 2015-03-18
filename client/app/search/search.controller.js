@@ -155,8 +155,8 @@ angular.module('triphopApp')
 				path: locations,
 				geodesic: true,
 				strokeColor: '#FF0000',
-				strokeOpacity: 0.4,
-				strokeWeight: 1,
+				strokeOpacity: 0.6,
+				strokeWeight: 1.5,
         icons: [{
           icon: arrowSymbol,
           offset: '50px',
