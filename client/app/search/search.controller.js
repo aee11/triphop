@@ -300,7 +300,7 @@ angular.module('triphopApp')
 		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
         $scope.isTripFound = true;
-        if (route.locationsVisited < query.stops.length+1) {
+        if (route.locationsVisited < query.stops.length) {
           toaster.pop('info', 'Sorry, we couldn\'t visit every destination');
         }
         drawRoute(route.routeFares);
