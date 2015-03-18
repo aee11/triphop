@@ -71,7 +71,7 @@ exports.getAllFares = function(airports, dates, options, cb) {
   });
   console.log(requestQueries);
   var fares = {};
-  async.eachLimit(requestQueries, 8, function(requestQuery, callback) {
+  async.eachLimit(requestQueries, 16, function(requestQuery, callback) {
     request({url: requestQuery.query, json: true}, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         console.log('Found ' + body.fares.length + ' fares on ' + requestQuery.date);
