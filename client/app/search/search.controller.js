@@ -52,7 +52,7 @@ angular.module('triphopApp')
 		
 		//**** Get airport data json file
 		// Simple GET request example :
-		$http.get('/assets/airports_short.json').
+		$http.get('/assets/airports_new.json').
 			success(function(data, status, headers, config) {
 				// this callback will be called asynchronously
 				// when the response is available
@@ -64,32 +64,34 @@ angular.module('triphopApp')
 				// or server returns response with an error status.
 				console.log('error')
 		});
-				
-		$scope.formatLatLon = undefined;
+      
 		$scope.getAirportLocation = function(airportCode){
 			for(var i=0; i<$scope.airportData.length; i++){
 				var result;
-				if($scope.airportData[i].airportCode == airportCode){
-					var lat = $scope.airportData[i].lat;
-					var lon = $scope.airportData[i]['long'];
+				if($scope.airportData[i].id == airportCode){
+          // latitudes in hours, minutes, seconds, direction
+					var latH = $scope.airportData[i].latH;
+          var latM = $scope.airportData[i].latM;
+          var latS = $scope.airportData[i].latS;
+          var latD = $scope.airportData[i].latD;
+          // lon same as lat
+					var lonH = $scope.airportData[i].lonH;
+          var lonM = $scope.airportData[i].lonM;
+          var lonS = $scope.airportData[i].lonS;
+          var lonD = $scope.airportData[i].lonD;
 					
-					// Cut off second '.' and everything beyond it
-					var formatLatLon = function(ll){
-						var dots = 0;
-						for(var i=0; i<ll.length; i++){
-							if(ll.substring(i,i+1) === '.'){
-								dots++;
-							}
-							if(dots == 2){
-								return ll.substring(0, i);
-							}
-						}
-						return ll;
-					}
-					lat = formatLatLon(lat);
-					lon = formatLatLon(lon);
-					
-					$scope.formatLatLon = formatLatLon;
+					// convert to num
+          var formatLatLon = function(latH, latM, latS, latD) {
+            var minToNum = latM/60;
+            var secToNum = latS/60/60;
+            var totalLat = latH+minToNum+secToNum;
+            if(latD == "S" || latD == "W"){
+              return -totalLat;
+            }
+            return totalLat;
+          }
+					var lat = formatLatLon(latH, latM, latS, latD);
+					var lon = formatLatLon(lonH, lonM, lonS, lonD);
 					
 					result = {latitude: lat, longitude: lon}
 					return result;
