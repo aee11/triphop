@@ -90,7 +90,17 @@ function addMarker(location, info) {
 // window.onload = loadScript;
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, FareRoute, $http, $location, GoogleMapsInitializer) {
+  .controller('SearchCtrl', function ($scope, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
+    var startLocation = FareQuery.getStartLocation();
+    if (_.isObject(startLocation)) {
+      
+    } else {
+      console.log('redirecting to landing page');
+      FareQuery.setStartLocation(null);
+      $window.location.href = '/';
+      return;
+    }
+
     GoogleMapsInitializer.mapsInitialized.then(function () {
       var mapOptions = {
         zoom: 8,
@@ -102,15 +112,6 @@ angular.module('triphopApp')
       map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     });
 		scope = $scope;
-    if (angular.isObject(FareRoute.uiObject.query)) {
-      console.log(FareRoute.uiObject.query);
-      $scope.query = FareRoute.uiObject.query;
-      // initialize(); // Smá ljótt
-    } else {
-      console.log('going to landing page');
-      // $location.path('main');
-      // return;
-    }
 		
 		$scope.infowindow = infowindow;
     // $scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };

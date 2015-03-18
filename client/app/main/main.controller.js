@@ -1,24 +1,23 @@
 'use strict';
 
 angular.module('triphopApp')
-  .controller('MainCtrl', function ($scope, $location, FareRoute) {
+  .controller('MainCtrl', function ($scope, $location, FareRoute, FareQuery) {
     $scope.showParam = true;
 
     // ***** Query
-
-    $scope.query = {
-      startLoc: "",
-      stops: [""],
-      durs: [""],
-      dur: "",
-      loc: ""
-    };
+    $scope.startingLocation = '';
+    // $scope.query = {
+    //   startLoc: "",
+    //   stops: [""],
+    //   durs: [""],
+    //   dur: "",
+    //   loc: ""
+    // };
 
     // ***** datePicker
 
     $scope.today = function() {
-      $scope.query.startDate = new Date();
-      $scope.query.startDate = $scope.query.startDate.toDateString();
+      $scope.startDate = moment().format('D MMMM YYYY');
     };
     $scope.today();
 
@@ -52,8 +51,9 @@ angular.module('triphopApp')
 
     $scope.searchFirst = function () {
       console.log('going to search page');
-      FareRoute.uiObject.query = $scope.query;
-      $location.path('search');
+      FareQuery.setStartLocation($scope.startingLocation);
+      FareQuery.setStartDate($scope.startDate);
+      $location.path('/search');
     };
     
   });
