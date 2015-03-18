@@ -33,6 +33,7 @@ angular.module('triphopApp')
     
     var check = function() {
         if (_.isObject(startLocation)) {
+				$scope.startLocation = startLocation;
         $scope.query = FareQuery.getQuery();
         console.log($scope.query);
       } else {
@@ -43,6 +44,8 @@ angular.module('triphopApp')
       }
     }
 		check();
+		startLocation = undefined;
+		
 		$scope.markers = [];
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
