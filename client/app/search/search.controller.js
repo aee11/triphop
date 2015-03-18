@@ -24,7 +24,7 @@ var scope;
 
 
 angular.module('triphopApp')
-  .controller('SearchCtrl', function ($scope, $compile, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
+  .controller('SearchCtrl', function ($scope, toaster, $compile, FareRoute, $http, $window, GoogleMapsInitializer, FareQuery) {
 		
 		//plz remove
 		scope = $scope;
@@ -294,10 +294,14 @@ angular.module('triphopApp')
 		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
         $scope.isTripFound = true;
+        if (route.locationsVisited < query.stops.length+1) {
+          toaster.pop('info', 'Sorry, we couldn\'t visit every destination');
+        }
         drawRoute(route.routeFares);
         updateInfowindows();
         console.log($scope.route);
       }, function (err) {
+        toaster.pop('error', 'Sorry, an error came up and we couldn\'t find a route');
         console.error(err);
       });
     };
@@ -307,6 +311,10 @@ angular.module('triphopApp')
 			console.log("Chosen airport: " + chosenAirport);
 			var duration = $scope.stops.dur;
 			var location = $scope.getAirportLocation(chosenAirport);
+      if (!location) {
+        toaster.pop('error', 'Oops, we couldn\'t find that airport');
+        return;
+      }
 			console.log('chosenAirport');
 			console.log(chosenAirport);
 			console.log('duration');
