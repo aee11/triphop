@@ -28,14 +28,17 @@ angular.module('triphopApp')
 		
 		//plz remove
 		scope = $scope;
+		$scope.stops = {
+			stops: []
+		};
 		
     var startLocation = FareQuery.getStartLocation();
     
     var check = function() {
         if (_.isObject(startLocation)) {
 				$scope.startLocation = startLocation;
-        $scope.query = FareQuery.getQuery();
-        // console.log($scope.query);
+        // $scope.stops = FareQuery.getQuery();
+        // console.log($scope.stops);
       } else {
         // console.log('redirecting to landing page');
         FareQuery.setStartLocation(null);
@@ -45,7 +48,7 @@ angular.module('triphopApp')
     }
 		check();
 		
-		// $scope.query.markers = [];
+		// $scope.stops.markers = [];
 		$scope.markers = [];
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
@@ -125,9 +128,9 @@ angular.module('triphopApp')
 			console.log(startCoordinates);
 			var lat = startCoordinates.latitude;
 			var lon = startCoordinates.longitude;
-			$scope.query.lat = lat;
-			$scope.query.lon = lon;
-			$scope.query.loc = $scope.startLocation;
+			$scope.stops.lat = lat;
+			$scope.stops.lon = lon;
+			$scope.stops.loc = $scope.startLocation;
 			$scope.map.setCenter(new google.maps.LatLng(lat, lon));
 			// $scope.addStop();
 			$scope.addMarker(new google.maps.LatLng(lat, lon));
@@ -136,9 +139,9 @@ angular.module('triphopApp')
 		
 		var drawPolyLines = function(locations) {
 			var flightPlanCoordinates = [];
-			for(var i=0; i<$scope.query.stops.length; i++){
-				var lat = $scope.query.stops[i].lat;
-				var lon = $scope.query.stops[i].lon;
+			for(var i=0; i<$scope.stops.stops.length; i++){
+				var lat = $scope.stops.stops[i].lat;
+				var lon = $scope.stops.stops[i].lon;
 				flightPlanCoordinates.push(
 					new $scope.google.maps.LatLng(lat, lon));
 			}
@@ -155,7 +158,7 @@ angular.module('triphopApp')
     var drawRoute = function(route) {
       var locations = [];
       _.forEach(route, function (fare) {
-        var airportLocation = getAirportLocation(fare.a);
+        var airportLocation = $scope.getAirportLocation(fare.a);
         locations.push(airportLocation);
       });
       drawPolyLines(locations);
@@ -178,11 +181,11 @@ angular.module('triphopApp')
 		}
 		
 		$scope.removeStop = function(location){
-			for(var i=0; i<$scope.query.stops.length; i++){
-				if($scope.query.stops[i].airport == location){
+			for(var i=0; i<$scope.stops.stops.length; i++){
+				if($scope.stops.stops[i].airport == location){
 					console.log(location + ' stop removed');
-					$scope.query.stops.splice(i, 1);
-					console.log($scope.query.stops);
+					$scope.stops.stops.splice(i, 1);
+					console.log($scope.stops.stops);
 				}
 			}
 			for(var i=0; i<$scope.markers.length; i++){
@@ -212,9 +215,14 @@ angular.module('triphopApp')
     };
 		
     $scope.addStop = function() {
-			var chosenAirport = $scope.query.loc.airports[0];
-			var duration = $scope.query.dur;
+			var chosenAirport = $scope.stops.loc.airports[0];
+			console.log("Chosen airport: " + chosenAirport);
+			var duration = $scope.stops.dur;
 			var location = $scope.getAirportLocation(chosenAirport);
+			console.log('chosenAirport');
+			console.log(chosenAirport);
+			console.log('duration');
+			console.log(duration);
 			FareQuery.addLeg(chosenAirport, duration);
       var lat = location.latitude;
 			var lon = location.longitude;
@@ -223,8 +231,8 @@ angular.module('triphopApp')
 			// console.log('adding marker at ' + lat + ', ' + lon);
 			// console.log(lat);
 			// console.log(lon);
-			$scope.query.durs.push(duration);
-      $scope.query.stops.push({
+			// $scope.stops.durs.push(duration);
+      $scope.stops.stops.push({
 				lat: lat,
 				lon: lon,
 				airport: chosenAirport,
@@ -234,7 +242,7 @@ angular.module('triphopApp')
     }
 		
 		$scope.today = function() {
-      $scope.query.startDate = new Date();
+      $scope.stops.startDate = new Date();
     };
 		
     $scope.today();
