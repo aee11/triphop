@@ -54,6 +54,7 @@ angular.module('triphopApp')
 		$scope.infowindow = undefined;
 		$scope.currentBounds = undefined;
 		$scope.formatLatLon = undefined;
+    $scope.isTripFound = false;
 		
 		$scope.getAirportLocation = function(airportCode){
 			for(var i=0; i<$scope.airportData.length; i++){
@@ -292,6 +293,7 @@ angular.module('triphopApp')
       console.log(fareQuery);
 		  FareRoute.routeApi.getTSPRoute(fareQuery, function (route) {
         $scope.route = route;
+        $scope.isTripFound = true;
         drawRoute(route.routeFares);
         updateInfowindows();
         console.log($scope.route);
