@@ -1,5 +1,5 @@
 # triphop
-Dohop Hackathon 2015 project
+Project for Dohop's five day hackathon 2015.
 
 ## About 
 
@@ -25,8 +25,8 @@ We always find the cheapest solution for the data we have!
 
 ## How to run the code
 
-- Build project: Execute ´npm install´ and ´bower install´
-- Serve website: ´grunt serve´
+- Build project: Execute `npm install` and `bower install`
+- Serve website: `grunt serve`
 
 ## Walkthrough
 
@@ -36,13 +36,13 @@ This is our landing page, clean and simple.
 On the landing page the user specifies the starting location and the starting date.
 ![skref2](http://i.imgur.com/amcvYOj.png)
 
-After specifying the starting location and pressing 'Search', the user is taken to a map where he can see his starting location.
+After specifying the starting location and pressing **Search**, the user is taken to a map where he can see his starting location.
 ![skref3](http://i.imgur.com/rbuKYuc.png)
 
 Here the user can choose the locations he wants to visit and for how many days he would like to stay at each location.
 ![skref4](http://i.imgur.com/KV23kMl.png)
 
-When the user is done entering in locations he presses 'Create trip' and is shown the cheapest route graphicly on the screen along with the total price of the trip.
+When the user is done entering in locations he presses **Create trip** and is shown the cheapest route graphicly on the screen along with the total price of the trip.
 ![skref5](http://i.imgur.com/yDbRkG5.png)
 
 After creating a trip the user can click individual locations on the map to view information about that particular stop.
