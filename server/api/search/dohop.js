@@ -5,7 +5,7 @@ var request = require('request');
 var template = require('url-template');
 var moment = require('moment');
 var async = require('async');
-var BASE_URL = require('../../config/local.env').DOHOP_API_BASEURL;
+var BASE_URL = 'http://api.dohop.com';
 var BASE_PATH = template.parse('/api/v1/livestore/en/{user-country}/per-airport/{departure-airport}/{arrival-airports}/{date-from}/{date-to}?id=H4cK3r&currency={currency}&b_max=1&fare-format=full&airport-format=full');
 
 exports.getLowestFare = function(depAirport, depDateFrom, depDateTo, arrivalLegs, options, cb) {
