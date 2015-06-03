@@ -1,6 +1,6 @@
 # triphop
 
-[Preview of project](http://46.101.33.122:9000/)
+[Preview of project](http://46.101.33.122/)
 
 Project for Dohop's five day hackathon 2015.
 
